@@ -1,4 +1,4 @@
-const Nrr = require('C:/Users/Pichau/Desktop/PASTA DE PROGRAMAR/JavaScript/NewtonRaphoson/Nrr')
+const Nrr = require('./Nrr') 
 function f(x) {
     return x ** 2 + 2 * x - 90000000
 }
