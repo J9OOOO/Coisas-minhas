@@ -89,3 +89,4 @@ function Brinquedo(x1, string) {
 }
 
 Brinquedo(21543, "sqrt(x)")
+//QUEM BRINCA UM DIA VIRA BRINQUEDO, SE LEMBRE
