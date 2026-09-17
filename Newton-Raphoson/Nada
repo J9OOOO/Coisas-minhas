@@ -1,0 +1,18 @@
+const Nrr = require('./TesteNrr')
+const d = require('decimal.js')
+const de = require('C:/.../PASTA DE PROGRAMAR/JavaScript/decimall')
+
+function f(x) {
+    return x ** 2 + 2 * x
+}
+
+let x = new d.Decimal("0.1")
+let raio = 5
+
+function Extensao(f, x, raio) {
+    let valor = Nrr.InvocatusIII(f, raio)
+    let res = de.Iteracao(f, d.Decimal(valor), 200, raio)
+    console.log(res)
+}
+
+//Talvez um dia eu volte aqui
