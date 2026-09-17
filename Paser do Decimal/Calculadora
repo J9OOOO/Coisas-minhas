@@ -1,0 +1,120 @@
+const gh = require('decimal.js')
+const p = require('C:/Users/Pichau/Desktop/PASTA DE PROGRAMAR/JavaScript/sadf.js');
+
+gh.set({ precision: 100 });
+
+const conv = {
+    "+": {peso: 1, tipo: "+", usa: 2},
+    "-": {peso: 1, tipo: "-", usa: 2},
+    "*": {peso: 2, tipo: "*", usa: 2},
+    "/": {peso: 2, tipo: "/", usa: 2},
+    "^": {peso: 3, tipo: "^", usa: 2},
+    "sin": {peso: 4, tipo: "sin", usa: 1},
+    "sqrt": {peso: 4, tipo: "sqrt", usa: 1},
+    "(": "(",
+    ")": ")"
+}
+
+const op = {
+    "+": (a, b) => a.add(b),
+    "-": (a, b) => a.minus(b),
+    "*": (a, b) => a.times(b),
+    "/": (a, b) => a.div(b),
+    "^": (a, b) => a.pow(b),
+    "sin": (a) => a.sin(),
+    "sqrt": (a) => a.sqrt()
+}
+
+const par = {
+
+Remover(lista, p0, p1) {
+    par.conversor(lista);
+    let listaNossa = lista.slice(p0, p1)
+    while(listaNossa.length > 1) {
+    let PesoMaior = -Infinity;
+    let I = undefined;
+
+    for(let i = 0; i < p1 - p0; i++) {
+        if (lista[p0 + i]?.peso !== undefined) {
+            if (lista[p0 + i].peso > PesoMaior) {
+                I = p0 + i;
+                PesoMaior = lista[p0 + i].peso;
+                //console.log(I)
+            }
+        }
+    }
+    let hhh = lista[I].usa
+    par.Resolver(lista, I)
+    //console.log(lista)
+    p1 = p1 - hhh
+    listaNossa = lista.slice(p0, p1)
+    p1
+    //console.log(listaNossa)
+    }
+    return p1
+},
+
+Resolver(lista, I) {
+    //console.log(lista)
+    if(lista[I].usa !== 1) {
+        lista[I-1] = op[lista[I].tipo](lista[I-1], lista[I+1]);
+        lista[I] = "";
+        lista[I+1] = "";
+    } else {
+        lista[I] = op[lista[I].tipo](lista[I+1]);
+        lista[I+1] = "";  
+    }
+    p.remover(lista);
+},
+
+conversor(lista) {
+    for(let i = 0; i < lista.length; i++) {
+        if (typeof lista[i] === "string") {
+            lista[i] = conv[lista[i]];
+        }
+    }
+    return lista
+},
+
+Dogivalizador(lista) {
+    let num = 0
+    while (lista.length !== 1) {
+        let p1 = lista.indexOf(")");
+        let lista2 = lista.slice(0, p1);
+        let p0 = lista2.lastIndexOf("(") + 1;
+
+        if (p0 === 0 || p1 === -1) {
+            //console.log("Ss")
+            p1 = par.Remover(lista, 0, lista.length);
+            //console.log(lista);
+            break;
+        }
+
+        p1 = par.Remover(lista, p0, p1);
+        //console.log(lista[p0 - 1])
+        //console.log(lista[p1])
+        lista[p0 - 1] = "";
+        lista[p1] = "";
+        p.remover(lista);
+        //console.log(lista);
+        num = num + 1
+
+        if (num > 38) {
+            break;
+        }
+        //console.log(lista.length)
+    }
+    return(lista[0])
+}
+}
+
+//let lista = [ "sin", "(", gh("2"), "^", gh("2"), ")", "+", gh("1")]
+//let brinquedo = lista
+//let a = par.Dogivalizador(brinquedo)
+//par.Remover(lista2, 0, lista2.length)
+//console.log(lista)
+//console.log(a)
+module.exports = {
+    par,
+    conv
+}
