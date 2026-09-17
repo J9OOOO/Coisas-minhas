@@ -1,5 +1,5 @@
 const gh = require('decimal.js')
-const p = require('C:/Users/Pichau/Desktop/PASTA DE PROGRAMAR/JavaScript/sadf.js');
+const p = require('./sadf.js');
 
 gh.set({ precision: 100 });
 
