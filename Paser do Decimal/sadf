@@ -1,0 +1,60 @@
+//let a = parser.DogiVal("1-2*3/2")
+//Resolver(a, 0, a.length);
+//a.length = 1
+//console.log(a);
+const parser = {
+
+DogiVal(lista) {
+    let listareal = []
+    for(let i = 0; i < lista.length; i++) {
+        listareal[i] = lista[i];
+    }
+    return listareal
+},
+remover(lista) {
+    for (let i = lista.length - 1; i >= 0; i--) {
+    if (lista[i] === "") {
+        lista.splice(i, 1);
+    }
+}
+},
+Resolver(lista) {    
+    let div
+    let mul
+    let add
+    let sub
+    do {
+    console.log(lista)
+    opD = lista //lista.slice(a ,b);
+    div = opD.indexOf("/") //+ a;
+    mul = opD.indexOf("*") //+ a;
+    add = opD.indexOf("+") //+ a;
+    sub = opD.indexOf("-") //+ a;
+    if ((mul < div || div === -1) && mul !== -1) {
+        lista[mul-1] = Number(lista[mul - 1]) * Number(lista[mul + 1])
+        lista[mul] = ""
+        lista[mul + 1] = ""
+        parser.remover(lista)
+    } else if (div !== -1){
+        lista[div - 1] = Number(lista[div - 1]) / Number(lista[div + 1])
+        lista[div] = ""
+        lista[div + 1] = ""
+        parser.remover(lista)
+    } else if ((add < sub || sub === -1) && add !== -1) {
+        lista[add-1] = Number(lista[add - 1]) + Number(lista[add + 1])
+        lista[add] = ""
+        lista[add + 1] = ""
+        parser.remover(lista)
+        console.log("aaaaaaaaaaaaaa")
+    } else if (sub !== -1) {
+        lista[sub - 1] = Number(lista[sub - 1]) - Number(lista[sub + 1])
+        lista[sub] = ""
+        lista[sub + 1] = ""
+        parser.remover(lista)
+    }
+    }
+    while((div !== -1 || mul !== -1 || add !== -1 || sub !== -1));
+}
+}
+
+module.exports = parser;
