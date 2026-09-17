@@ -1,7 +1,7 @@
 const p = require('./sadf.js');
-const par = require('./Paser Decimal')
+const par = require('./Paser Geral')
 const gh = require('decimal.js')
-const { conv } = require('./Paser Decimal')
+const { conv } = require('./Paser Geral')
 
 gh.set({ precision: 100 });
 
