@@ -1,1 +1,1 @@
-Brinquedo(x, expressão) -> calcula expressão(x) em precisão de uma quantidade específica de dígitos
+parser(x, expressão) -> calcula expressão(x) em precisão de uma quantidade específica de dígitos
