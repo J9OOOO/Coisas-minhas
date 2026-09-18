@@ -7,6 +7,7 @@ gh.set({ precision: 100 });
 
 let listaOp = []
 for(let j = 0; (Object.values(conv)[j].tipo) !== undefined; j++) listaOp.push(Object.values(conv)[j].tipo)
+listaOp.sort((a, b) => b.length - a.length)
 //console.log(listaOp)
 
 //let string = "sin(x)+sqrt(x)+1"
@@ -30,7 +31,23 @@ function tokenizar(string) {
             break
         }
         }
-        if (!porrinha) tokens[i] = string[i]
+        if (!porrinha) {
+            if (!isNaN(Number(string[i]))) {
+
+                let numero = ""
+
+                while (i < string.length && (!isNaN(Number(string[i])) || string[i] === ".")) {
+                    numero += string[i]
+                    ++i
+                }
+
+                tokens.push(numero)
+                --i
+
+            } else {
+                tokens.push(string[i])
+            }
+        }
         porrinha = false
         //console.log(tokens)
     }
@@ -38,23 +55,35 @@ function tokenizar(string) {
     return tokens
 }
 
-//não julgue o porrinha, por favor
 function porrinha(lista, numero) {
-    if (!(numero instanceof gh)) numero = gh(numero)
+    //if (!(numero instanceof gh) && typeof numero !== "Object") numero = gh(numero)
     for(let i = 0; i < lista.length; i++) {
         if (!isNaN(Number(lista[i]))) {
             lista[i] = new gh(lista[i])
         }
     }
-    return lista = lista.map(a => a === "x" ? numero : a)
+    return lista.map(a => numero[a] instanceof gh ? numero[a] : a)
 }
 
-function parser(x, string) {
+function parser(env, string) {
     let a = tokenizar(string)
-    let b = porrinha(a, new gh(x))
+    let b = porrinha(a, env)
+    //console.log(b)
     let c = par.par.Dogivalizador(b)
-    console.log(c)
+    //console.log(c)
+    return c
 }
 
-parser(2, "sin(x)+1")
-//Em memória da versão anterior, um voto de 2 iterações de silêncio
+let env
+
+function f(x) {
+    env = {
+        x: gh(x)
+    }
+
+    return parser(env, "cbrt(x)+2logn(x^2)-1")
+}
+
+
+console.log(f(2))
+//Em memória da versão anterior, um voto de 3 iterações de silêncio
