@@ -38,6 +38,7 @@ function tokenizar(string) {
     return tokens
 }
 
+//não julgue o porrinha, por favor
 function porrinha(lista, numero) {
     if (!(numero instanceof gh)) numero = gh(numero)
     for(let i = 0; i < lista.length; i++) {
