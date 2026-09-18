@@ -16,13 +16,13 @@ const conv = {
 }
 
 const op = {
-    "+": (a, b) => a.add(b),
-    "-": (a, b) => a.minus(b),
-    "*": (a, b) => a.times(b),
-    "/": (a, b) => a.div(b),
-    "^": (a, b) => a.pow(b),
-    "sin": (a) => a.sin(),
-    "sqrt": (a) => a.sqrt()
+    "+": (a, b) => gh(a).add(gh(b)),
+    "-": (a, b) => gh(a).minus(gh(b)),
+    "*": (a, b) => gh(a).times(gh(b)),
+    "/": (a, b) => gh(a).div(gh(b)),
+    "^": (a, b) => gh(a).pow(gh(b)),
+    "sin": (a) => gh(a).sin(),
+    "sqrt": (a) => gh(a).sqrt()
 }
 
 const par = {
