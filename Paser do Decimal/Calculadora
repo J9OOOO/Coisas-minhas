@@ -10,7 +10,14 @@ const conv = {
     "/": {peso: 2, tipo: "/", usa: 2},
     "^": {peso: 3, tipo: "^", usa: 2},
     "sin": {peso: 4, tipo: "sin", usa: 1},
+    "cos": {peso: 4, tipo: "cos", usa: 1},
+    "tan": {peso: 4, tipo: "tan", usa: 1},
     "sqrt": {peso: 4, tipo: "sqrt", usa: 1},
+    "cbrt": {peso: 4, tipo: "cbrt", usa: 1},
+    "nrt": {peso: 4, tipo: "nrt", usa: 2},
+    "log": {peso: 4, tipo: "log", usa: 1},
+    "ln": {peso: 4, tipo: "ln", usa: 1},
+    "logn": {peso: 4, tipo: "logn", usa: 2},
     "(": "(",
     ")": ")"
 }
@@ -22,7 +29,14 @@ const op = {
     "/": (a, b) => gh(a).div(gh(b)),
     "^": (a, b) => gh(a).pow(gh(b)),
     "sin": (a) => gh(a).sin(),
-    "sqrt": (a) => gh(a).sqrt()
+    "cos": (a) => gh(a).cos(),
+    "tan": (a) => gh(a).tan(),
+    "sqrt": (a) => gh(a).sqrt(),
+    "cbrt": (a) => gh(a).cbrt(),
+    "nrt": (a, b) => gh(b).pow(gh(1).div(gh(a))),
+    "log": (a) => gh(a).log(),
+    "ln": (a) => gh(a).ln(),
+    "logn": (a, b) => (gh(b).ln()).div(gh(a).ln())
 }
 
 const par = {
