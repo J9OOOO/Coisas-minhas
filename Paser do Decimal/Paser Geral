@@ -19,38 +19,46 @@ listaOp.sort((a, b) => b.length - a.length)
 function tokenizar(string) {
     let tokens = []
     let porrinha = false
-     for (let i = 0; i < string.length; i++) {
+    
+    for (let i = 0; i < string.length; i++) {
         for(let j = 0; j < listaOp.length; j++) {
             if (string.startsWith(listaOp[j], i)) {
-                //console.log("ACHOU", listaOp[j], "em", i)
-            }
-            if (string.startsWith(listaOp[j], i)) {
+                
+                if (listaOp[j] === "-" && (i === 0 || "+-*/^(".includes(string[i-1]))) {
+                    porrinha = false
+                    break
+                }
+
                 tokens.push(listaOp[j])
                 i += listaOp[j].length - 1
                 porrinha = true
-            break
+                break
+            }
         }
-        }
+
         if (!porrinha) {
-            if (!isNaN(Number(string[i]))) {
+            let ehSinal = string[i] === "-";
+            let numero = ""
 
-                let numero = ""
+            if (ehSinal) {
+                numero += "-"
+                ++i
+            }
 
+            if (ehSinal || !isNaN(Number(string[i]))) {
                 while (i < string.length && (!isNaN(Number(string[i])) || string[i] === ".")) {
                     numero += string[i]
                     ++i
                 }
-
-                tokens.push(numero)
+                tokens.push(new gh(numero))
                 --i
-
             } else {
                 tokens.push(string[i])
             }
         }
         porrinha = false
-        //console.log(tokens)
     }
+    
     tokens = tokens.filter(x => x !== "")
     return tokens
 }
@@ -66,16 +74,17 @@ function porrinha(lista, numero) {
 }
 
 function parser(env, string) {
-    let a = tokenizar(string)
-    let b = porrinha(a, env)
-    //console.log(b)
-    let c = par.par.Dogivalizador(b)
+    let p1 = TF(string, env)
+    //let a = tokenizar(p1)
+    //let b = porrinha(a, env)
+    //console.log(p1)
+    let c = par.par.Dogivalizador(p1)
     //console.log(c)
     return c
 }
 
 let funcoes = []
-let env
+//let env
 
 const f = {
     I(f) {
@@ -96,7 +105,7 @@ const f = {
             x: gh(x)
         }
 
-        return parser(env, "cbrt(x)")
+        return parser(env, "sqrt(x)")
     }
 }
 
@@ -106,22 +115,78 @@ for (let l of Object.values(f)) {
     }
 }
 
-function TF(string) {
-    let saborstring = []
-    for(let i = 0; i < string.length; i++) {
-        for(let j = 0; j < funcoes.length; j++) {
-            //console.log(funcoes[j])
-            if (funcoes[j].name === string[i]) {
-                saborstring.push(funcoes[j](string[i+1]))
-                saborstring[i+1] = ""
-                ++i
-            }
+function TF(string, env) {
+    string = tokenizar(string)
+    string = porrinha(string, env)
+    let lista = []
+    let j = 0
+    let res
+    for(let i = 0; i < string.length; ++i) {
+        let a = ftem(string[i])
+        //console.log(i)
+        if (a.tem) {
+            res = fazalgoai(string, i, a.i)
+            lista[j] = res.valor
+            i = i + res.par
+            ++j
+        } else {
+            lista[j] = string[i]
+            ++j
         }
-        saborstring.push(string[i])
     }
-    saborstring = saborstring.join("")
-    return saborstring
+    return lista
 }
 
-console.log(TF("f2+1*4*1+1-3"))
-//Em memória da versão anterior, um voto de 4 iterações de silêncio
+function pu(lista, fi) {
+    let pro = 0
+    let i = fi + 1
+    do {
+        if (lista[i] === "(" ) {
+            ++pro
+        }
+
+        if (lista[i] === ")") {
+            --pro
+        }
+        ++i
+        if (i > lista.length) throw new Error("FECHA SAPORRA")
+    }
+    while(pro !== 0)
+    //console.log(lista.slice(fi + 1, i))
+    return i
+}
+
+let env = {
+    x: gh(1),
+    h: gh(0.0001)
+}
+
+function ftem(a) {
+    let tem = false
+    let ir = -1
+    for(let i = 0; i < funcoes.length; ++i) {
+        if (a === funcoes[i].name) {
+            tem = true
+            ir = i
+        }
+    }
+    return {tem: tem, i: ir}
+}
+
+function fazalgoai(lista, fi, fnome) {
+    let i = pu(lista, fi)
+    //console.log(lista.slice(fi + 1, i), par.par.Dogivalizador(lista.slice(fi + 1, i)))
+    let valor =  par.par.Dogivalizador(lista.slice(fi + 1, i))
+    //console.log(funcoes[fnome])
+    let fvalor = funcoes[fnome](valor)
+    return {valor: fvalor, par: i - fi - 1}
+}
+
+//console.log(tokenizar("-1*-1"))
+
+//console.log(parser(env, "(g(x)-g(x))"))
+
+console.log(parser(env, "(g(x+h)-g(x-h))/(2*h)"))
+
+//console.log(ftem("f"))
+//Em memória da versão anterior, um voto de 5 iterações de silêncio
