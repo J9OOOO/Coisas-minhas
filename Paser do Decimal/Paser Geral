@@ -74,16 +74,54 @@ function parser(env, string) {
     return c
 }
 
+let funcoes = []
 let env
 
-function f(x) {
-    env = {
-        x: gh(x)
-    }
+const f = {
+    I(f) {
+        funcoes.push(f)
+        //console.log(funcoes)
+    },
 
-    return parser(env, "cbrt(x)+2logn(x^2)-1")
+    f(x) {
+        env = {
+            x: gh(x)
+        }
+
+        return parser(env, "cbrt(x)+2logn(x^2)-1")
+    },
+
+    g(x) {
+        env = {
+            x: gh(x)
+        }
+
+        return parser(env, "cbrt(x)")
+    }
 }
 
+for (let l of Object.values(f)) {
+    if (l !== f.I) {
+    f.I(l)
+    }
+}
 
-console.log(f(2))
-//Em memória da versão anterior, um voto de 3 iterações de silêncio
+function TF(string) {
+    let saborstring = []
+    for(let i = 0; i < string.length; i++) {
+        for(let j = 0; j < funcoes.length; j++) {
+            //console.log(funcoes[j])
+            if (funcoes[j].name === string[i]) {
+                saborstring.push(funcoes[j](string[i+1]))
+                saborstring[i+1] = ""
+                ++i
+            }
+        }
+        saborstring.push(string[i])
+    }
+    saborstring = saborstring.join("")
+    return saborstring
+}
+
+console.log(TF("f2+1*4*1+1-3"))
+//Em memória da versão anterior, um voto de 4 iterações de silêncio
