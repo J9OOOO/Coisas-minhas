@@ -22,6 +22,23 @@ const conv = {
     ")": ")"
 }
 
+const op = {
+    "+": (a, b) => `(${valor(a)}).add(${valor(b)})`,
+    "-": (a, b) => `(${valor(a)}).sub(${valor(b)})`,
+    "*": (a, b) => `(${valor(a)}).mul(${valor(b)})`,
+    "/": (a, b) => `(${valor(a)}).div(${valor(b)})`,
+    "^": (a, b) => `(${valor(a)}).pow(${valor(b)})`,
+    "sin": (a) => `(${valor(a)}).sin()`,
+    "cos": (a) => `(${valor(a)}).cos()`,
+    "tan": (a) => `(${valor(a)}).tan()`,
+    "sqrt": (a) => `(${valor(a)}).sqrt()`,
+    "cbrt": (a) => `(${valor(a)}).cbrt()`,
+    "nrt": (a, b) => `(${valor(a)}).nrt(${valor(b)})`,
+    "log": (a) => `(${valor(a)}).log()`,
+    "ln": (a) => `(${valor(a)}).ln()`,
+    "logn": (a, b) => `(${valor(a)}).logn(${valor(b)})`
+}
+
 for(let j = 0; (Object.values(conv)[j].tipo) !== undefined; j++) listaOp.push(Object.values(conv)[j].tipo)
 listaOp.sort((a, b) => b.length - a.length)
 
@@ -92,23 +109,6 @@ const valor = x => {
 
     console.log(z)
     return `Ca.C(${x})`
-}
-
-const op = {
-    "+": (a, b) => `(${valor(a)}).add(${valor(b)})`,
-    "-": (a, b) => `(${valor(a)}).sub(${valor(b)})`,
-    "*": (a, b) => `(${valor(a)}).mul(${valor(b)})`,
-    "/": (a, b) => `(${valor(a)}).div(${valor(b)})`,
-    "^": (a, b) => `(${valor(a)}).pow(${valor(b)})`,
-    "sin": (a) => `(${valor(a)}).sin()`,
-    "cos": (a) => `(${valor(a)}).cos()`,
-    "tan": (a) => `(${valor(a)}).tan()`,
-    "sqrt": (a) => `(${valor(a)}).sqrt()`,
-    "cbrt": (a) => `(${valor(a)}).cbrt()`,
-    "nrt": (a, b) => `(${valor(a)}).nrt(${valor(b)})`,
-    "log": (a) => `(${valor(a)}).log()`,
-    "ln": (a) => `(${valor(a)}).ln()`,
-    "logn": (a, b) => `(${valor(a)}).logn(${valor(b)})`
 }
 
 function conversor(lista) {
@@ -221,4 +221,5 @@ let a134 = (Ca.C(((Ca.C(f(((Ca.C(x)).add(Ca.C(h)))))).sub(Ca.C(f(((Ca.C(x)).sub(
 module.exports = {
   CompC: BagulhoDeAcharParentesesSoQueBomDemaisTantoQueEhGrandeParaCaralho
 }
-  
+
+//Isso foi massa de se fazer
