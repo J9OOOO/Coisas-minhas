@@ -1,0 +1,64 @@
+A classe complexa tem as seguintes operações:
+  z+w: z.add(w)
+  z-w: z.sub(w)
+  z*w: z.mul(w)
+  z/w: z.div(w)
+  conj(z): z.conj()
+  abs(z): z.r()
+  arg(z): z.theta()
+  e^z: z.exp()
+  ln(z): z.ln()
+  z^w: z.pow(w) (aceita w como real)
+  z*i: z.i()
+  z*(-i): z.in()
+  sin(z): z.sin()
+  cos(z): z.cos()
+  tan(z): z.tan()
+  z^1/w (vulgo raiz n-ésima): z.nrt(w) (aceita w como real)
+  sqrt(z): z.sqrt()
+  cbrt(z): z.cbrt()
+  log10(z): z.log()
+  log_(w)(z) = z.logn(w) (aceita w como real)
+  -z: z.neg()
+  sinh(z): z.sinh()
+  cosh(z): z.cosh()
+  tanh(z): z.tanh()
+  asin(z): z.asin()
+  acos(z): z.acos()
+  atan(z): z.atan()
+  asinh(z): z.asinh()
+  acosh(z): z.acosh()
+
+Função C:
+  Converte strings do tipo a+bi e literais numéricos para a classe complexa, e também funciona se utilizaar C(C(1)), por exemplo
+  Exemplos:
+  C("1+12i") -> {real: 1, imag: 12}
+  C("1-i") -> {real: 1, imag: -1}
+  C(1) -> {real: 1, imag: 0}
+  C(C(1)) -> {real: 1, imag: 0}
+
+Construtor do Co:
+  Converte duas entradas (real, imag) para a classe complexa
+  Se a parte imaginária não foi digitada, ele trata como se fosse 0
+  Trata a entrada de uma instância como uma cópia da entrada, ex: Co(Co(1, 1)) = Co(1, 1)
+  Suporta conversão polar:
+  Co.Polar(1, 1): 1∠1
+
+Comandos básicos:
+  z.print(): Uma forma mais fácil de se visualizar o complexo, reconstruindo ele na forma a+bi
+   exemplo:
+   C("1+i").print(): 1+i
+   {real: 12, imag: -1}.print(): 12-i
+  z.isReal():
+   retorna um booleano dizendo se z é real ou não
+  z.isImag():
+   retorna um booleano dizendo se z é imaginário puro ou não (0 nessa convenção não é)
+  z.eq(w):
+   retorna um booleano dizendo se z e w são o mesmo número complexo
+
+Constantes existentes:
+ im: a unidade imaginária i (Co(0, 1))
+
+OBS:
+ irei adicionar mais coisas futuramente, isso tem potencial para caramba
+
