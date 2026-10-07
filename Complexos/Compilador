@@ -1,0 +1,224 @@
+const Ca = require('./Complexos V9')
+const a = require('C:/Calculadora')
+const p = require('./sadf.js');
+
+let listaOp = []
+const conv = {
+    "+": {peso: 1, tipo: "+", usa: 2},
+    "-": {peso: 1, tipo: "-", usa: 2},
+    "*": {peso: 2, tipo: "*", usa: 2},
+    "/": {peso: 2, tipo: "/", usa: 2},
+    "^": {peso: 3, tipo: "^", usa: 2},
+    "sin": {peso: 4, tipo: "sin", usa: 1},
+    "cos": {peso: 4, tipo: "cos", usa: 1},
+    "tan": {peso: 4, tipo: "tan", usa: 1},
+    "sqrt": {peso: 4, tipo: "sqrt", usa: 1},
+    "cbrt": {peso: 4, tipo: "cbrt", usa: 1},
+    "nrt": {peso: 4, tipo: "nrt", usa: 2},
+    "log": {peso: 4, tipo: "log", usa: 1},
+    "ln": {peso: 4, tipo: "ln", usa: 1},
+    "logn": {peso: 4, tipo: "logn", usa: 2},
+    "(": "(",
+    ")": ")"
+}
+
+for(let j = 0; (Object.values(conv)[j].tipo) !== undefined; j++) listaOp.push(Object.values(conv)[j].tipo)
+listaOp.sort((a, b) => b.length - a.length)
+
+let string = "(f(x+h)-f(x-h))/(2*h)"
+
+
+function tokenizar(string) {
+    let tokens = []
+    let porrinha = false
+
+    for (let i = 0; i < string.length; i++) {
+        for(let j = 0; j < listaOp.length; j++) {
+            if (string.startsWith(listaOp[j], i)) {
+                
+                if (listaOp[j] === "-" && (i === 0 || "+-*/^(".includes(string[i-1]))) {
+                    porrinha = false
+                    break
+                }
+
+                tokens.push(listaOp[j])
+                i += listaOp[j].length - 1
+                porrinha = true
+                break
+            }
+        }
+
+        if (!porrinha) {
+            let ehSinal = string[i] === "-";
+            let numero = ""
+
+            if (ehSinal) {
+                numero += "-"
+                ++i
+            }
+
+            if (ehSinal || !isNaN(Number(string[i]))) {
+                while (i < string.length && (!isNaN(Number(string[i])) || string[i] === "." || string[i] === "i")) {
+                    numero += string[i]
+                    ++i
+                }
+                tokens.push((numero))
+                --i
+            } else {
+                tokens.push(string[i])
+            }
+        }
+        porrinha = false
+    }
+    
+    tokens = tokens.filter(x => x !== "")
+    return tokens
+}
+
+const valor = x => {
+    //console.log(x)
+
+    if (x[x.length - 1] === "i") return `Ca.C("${x}")`
+
+    let z = x.slice(x.indexOf("(") + 1, x.lastIndexOf(")"))
+
+    if (x.indexOf("(") !== -1) {
+        try {
+            if (!isNaN(Ca.C(z).real + Ca.C(z).imag)) return `Ca.C("${z}")`
+        } catch {
+            return `Ca.C(${x})`
+        }
+    }
+
+    console.log(z)
+    return `Ca.C(${x})`
+}
+
+const op = {
+    "+": (a, b) => `(${valor(a)}).add(${valor(b)})`,
+    "-": (a, b) => `(${valor(a)}).sub(${valor(b)})`,
+    "*": (a, b) => `(${valor(a)}).mul(${valor(b)})`,
+    "/": (a, b) => `(${valor(a)}).div(${valor(b)})`,
+    "^": (a, b) => `(${valor(a)}).pow(${valor(b)})`,
+    "sin": (a) => `(${valor(a)}).sin()`,
+    "cos": (a) => `(${valor(a)}).cos()`,
+    "tan": (a) => `(${valor(a)}).tan()`,
+    "sqrt": (a) => `(${valor(a)}).sqrt()`,
+    "cbrt": (a) => `(${valor(a)}).cbrt()`,
+    "nrt": (a, b) => `(${valor(a)}).nrt(${valor(b)})`,
+    "log": (a) => `(${valor(a)}).log()`,
+    "ln": (a) => `(${valor(a)}).ln()`,
+    "logn": (a, b) => `(${valor(a)}).logn(${valor(b)})`
+}
+
+function conversor(lista) {
+    return a.par.conversor(lista)
+}
+
+function Resolver(lista, I) {
+    //console.log(string)
+    //console.log(lista, lista[I], I)
+    //console.log(lista[I], lista[I-1], lista[I+1])
+    if(lista[I].usa !== 1) {
+        //if (isFinite(Number(lista[I+1]))) {
+            //lista[I+1] = gh(lista[I+1])
+            //lista[I-1] = gh(lista[I-1])
+        //}
+        lista[I-1] = op[lista[I].tipo](lista[I-1], lista[I+1]);
+        lista[I] = "";
+        lista[I+1] = "";
+    } else {
+        //if (isFinite(Number(lista[I+1]))) lista[I+1] = gh(lista[I+1])
+        lista[I] = op[lista[I].tipo](lista[I+1]);
+        lista[I+1] = "";  
+    }
+    p.remover(lista);
+}
+
+function comp(string) {
+    let I
+    while(string.length !== 1) {
+    //console.log(string)
+
+    let i = undefined
+    let pesomaior = - Infinity
+
+    //console.log(string)
+
+    //Não funcionou...
+    for(let aaa = 0; aaa < string.length - 1; ++aaa) {
+        if(typeof string[aaa] === "string" && string[aaa + 1][0] === "(" && typeof string[aaa].usa === "undefined") {
+            //console.log(typeof string[aaa] === "string" && string[aaa + 1][0] === "(" && typeof string[aaa].usa === "undefined")
+            string[aaa] = string[aaa] + "(" + string[aaa + 1] + ")"
+            string[aaa + 1] = ""
+            p.remover(string)
+            //console.log(string)
+        }
+    }
+    //FUNCTIONOU KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK
+    //console.log(string)
+
+    for(let i = 0; i < string.length; ++i) {
+        //console.log(string[i].peso)
+        if (string[i]?.peso !== undefined) {
+            if (string[i].peso > pesomaior) {
+                //i = 1 + i;
+                pesomaior = string[i].peso;
+                I = i
+                //console.log(i)
+            }
+        }
+    }
+
+    if (I !== undefined) Resolver(string, I)
+
+    if (string.length === 1) break
+    //console.log(string)
+    }
+    return string
+}
+//console.log(conversor(tokenizar(string)))
+function ccomp(lista) {
+    let listaxxx = lista
+    return comp(conversor(listaxxx))
+    //return comp(conversor(tokenizar(listaxxx)))
+}
+
+function BagulhoDeAcharParentesesSoQueBomDemaisTantoQueEhGrandeParaCaralho(string) {
+    console.log("Compilado via BDAPSQBDTQEGPC:")
+    if (typeof string !== "string" || string === "") throw new Error("Nenhuma expressão foi digitada")
+    console.log(string, "->")
+    let string67 = tokenizar(string)
+    let r
+    do {
+        let p1 = string67.indexOf(")")
+        let p0 = (string67.slice(0, p1)).lastIndexOf("(")
+        if (p0 === -1) {
+            if (string67[string67.length - 1] === ")") string67 = string67.slice(0, string67.length - 1)
+            r = ccomp(string67)
+            return r[0]
+        }
+        r = ccomp((string67.slice(p0 + 1, p1)))
+        string67.splice(p0, p1 - p0 + 1, "(" + r + ")")
+    }
+    while(string67.length !== 1)
+    return string67[0]
+}
+
+//console.log(BagulhoDeAcharParentesesSoQueBomDemaisTantoQueEhGrandeParaCaralho(string))
+
+//console.log(string)
+
+function f(x) {
+    return x
+}
+let h = Ca.C(1)
+let x = Ca.C("1+i")
+let a134 = (Ca.C(((Ca.C(f(((Ca.C(x)).add(Ca.C(h)))))).sub(Ca.C(f(((Ca.C(x)).sub(Ca.C(h))))))))).div(Ca.C(((Ca.C(2)).mul(Ca.C(h))))).print()
+
+//console.log(BagulhoDeAcharParentesesSoQueBomDemaisTantoQueEhGrandeParaCaralho(string))
+
+module.exports = {
+  CompC: BagulhoDeAcharParentesesSoQueBomDemaisTantoQueEhGrandeParaCaralho
+}
+  
