@@ -1,8 +1,9 @@
 A classe complexa tem as seguintes operações:
-  z+w: z.add(w)
-  z-w: z.sub(w)
-  z*w: z.mul(w)
-  z/w: z.div(w)
+  z+w: z.add(w) (aceita w como real)
+  z-w: z.sub(w) (aceita w como real)
+  z*w: z.mul(w) (aceita w como real)
+  z/w: z.div(w) (aceita w como real)
+  1/z: z.inv()
   conj(z): z.conj()
   abs(z): z.r()
   arg(z): z.theta()
@@ -28,6 +29,9 @@ A classe complexa tem as seguintes operações:
   atan(z): z.atan()
   asinh(z): z.asinh()
   acosh(z): z.acosh()
+  atanh(z): z.atanh()
+  Re(z): z.real
+  Im(z): z.imag
 
 Função C:
   Converte strings do tipo a+bi e literais numéricos para a classe complexa, e também funciona se utilizaar C(C(1)), por exemplo
@@ -54,10 +58,17 @@ Comandos básicos:
   z.isImag():
    retorna um booleano dizendo se z é imaginário puro ou não (0 nessa convenção não é)
   z.eq(w):
-   retorna um booleano dizendo se z e w são o mesmo número complexo
+   retorna um booleano dizendo se z e w são o mesmo número complexo (aceita w como real)
+  z.Neq(w)
+   retorna um booleano dizendo se z e w são diferentes (aceita w como real)
 
 Constantes existentes:
  im: a unidade imaginária i (Co(0, 1))
+ PI: 3.1415...
+
+Outros:
+ Ajuste(x):
+ Retorna x sendo um Co, caso seja incerto se ele é uma instância ou não
 
 OBS:
  irei adicionar mais coisas futuramente, isso tem potencial para caramba
