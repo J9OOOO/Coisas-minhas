@@ -60,7 +60,7 @@ Construtor do Co:
   Trata a entrada de uma instância como uma cópia da entrada, ex: Co(Co(1, 1)) = Co(1, 1)
   Suporta conversão polar:
   Co.Polar(1, 1): 1∠1
-  Tem proteção contra NaNm bloqueia na hora
+  Tem proteção contra NaN, bloqueia na hora
 
 Comandos básicos:
   z.print(): Uma forma mais fácil de se visualizar o complexo, reconstruindo ele na forma a+bi
@@ -91,7 +91,7 @@ Constantes existentes:
  LN10c: ln(10)
  LN2c: ln(2)
  LOG10Ec: log(E)
- PHI: razão áurea, (1.615...)
+ PHI: razão áurea, (1.618...)
  Tudo isso está dentro do "invar"
 
 Outros:
