@@ -16,6 +16,7 @@ class Co {
             return new Co(r)
         }
         if (theta === undefined) theta = 0
+        if (isNaN(r) || isNaN(theta)) throw new Error("??????????")
         return new Co(r * Math.cos(theta), r * Math.sin(theta))
     }
 
@@ -34,7 +35,7 @@ class Co {
     div(b) {
         b = Ajuste(b)
         let denom = b.real * b.real + b.imag * b.imag
-        if (this.isZero(b)) throw new Error("Divisão por zero")
+        if (b.isZero()) throw new Error("Divisão por zero")
         return new Co((this.real * b.real + this.imag * b.imag) / denom, (this.imag * b.real - this.real * b.imag) / denom)
     }
     inv() {
@@ -141,7 +142,7 @@ class Co {
     eq(b) {
         return (this.real === b.real && this.imag === b.imag)
     }
-    Noeq(b) {
+    noeq(b) {
         return (this.real !== b.real || this.imag !== b.imag)
     }
     isNaN() {
@@ -170,8 +171,18 @@ class Co {
 }
 
 //
-function C(string) {
-    if (string === null || string === "") throw new Error("Entrada inválida")
+function C(string, ino) {
+    //MODO "NORMAL"
+    if (ino !== undefined) {
+        if (string === null || string === undefined || ino === null || ino === undefined) throw new Error("Entrada inválida")
+        let real = Number(string)
+        let imag = Number(ino)
+        if (isNaN(real) || isNaN(imag)) throw new Error("'a' ou 'b' inválidos")
+        return new Co(real, imag)
+    }
+
+    //MODO PARSER
+    if (string === null || string === "" || string === undefined) throw new Error("Entrada inválida")
     //console.log(Number(string))
     if (string instanceof Co) return new Co(string)
     if (!isNaN(Number(string))) return new Co(Number(string))
@@ -182,7 +193,7 @@ function C(string) {
     let car = (string[string.indexOf("i") - 1])
 
     let teste2 = (car === "+" || car === "-" || car === undefined)
-    console.log(teste2)
+    //console.log(teste2)
 
     if (string.indexOf("i") === -1) return new Co(Number(string))
     if (teste !== string.length - 1 && teste !== -1) throw new Error("Formatação inválida")
