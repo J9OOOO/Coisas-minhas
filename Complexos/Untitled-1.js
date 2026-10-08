@@ -9,7 +9,11 @@ class Co {
             this.imag = gh(real.imag)
             return
         }
+        real = gh(real)
         if (imag === undefined) imag = gh(0)
+        real = gh(real)
+        imag = gh(imag)
+        if (real.isNaN() || imag.isNaN()) throw new Error("??????????")
         this.real = gh(real)
         this.imag = gh(imag)
     }
@@ -19,6 +23,7 @@ class Co {
             return new Co(r)
         }
         if (theta === undefined) theta = 0
+        if (r.isNaN() || theta.isNaN()) throw new Error("??????????")
         r = gh(r)
         theta = gh(theta)
         return new Co(r.times(theta.cos()), r.times(theta.sin()))
@@ -39,7 +44,7 @@ class Co {
     div(b) {
         b = Ajuste(b)
         let denom = (b.real).times(b.real).add((b.imag).times(b.imag))
-        if (denom.eq(0)) throw new Error("Divisão por zero")
+        if (b.isZero()) throw new Error("Divisão por zero")
         return new Co(((this.real).times(b.real).add((this.imag).times(b.imag))).div(denom), ((this.imag).times(b.real).sub(this.real.times(b.imag))).div(denom))
     }
     inv() {
@@ -150,9 +155,12 @@ class Co {
         b = Ajuste(b)
         return (this.real.eq(b.real) && this.imag.eq(b.imag))
     }
-    Neq(b) {
+    noeq(b) {
         b = Ajuste(b)
         return (!(this.real.eq(b.real)) || !(this.imag.eq(b.imag)))
+    }
+    isNaN() {
+        return (this.real.isNaN() || this.imag.isNaN())
     }
 
     asin() {
@@ -177,45 +185,72 @@ class Co {
 }
 
 //
-function C(string) {
-    let teste2, imag
+function C(string, ino) {
+    //MODO "NORMAL"
+    if (ino !== undefined) {
+        let real, imag
+        if (string === null || string === undefined || ino === null || ino === undefined) throw new Error("Entrada inválida")
+        try {
+        real = gh(string)
+        imag = gh(ino)
+        } catch {throw new Error("'a' ou 'b' inválidos")}
+        return new Co(real, imag)
+    }
+    
+    //MODO PARSER
+    if (string === null || string === "" || string === undefined) throw new Error("Entrada inválida")
+    let teste2, imag, real
     //console.log((string))
     if (string instanceof Co) return new Co(string)
     try {
-        (gh(string))
+        //console.log(new Co(gh(string)))
+        gh(string)
         return new Co(gh(string))
     } catch {
 
     let teste = string.indexOf("i")
     let p = 1
     let n = string.indexOf("+")
-    try {
-        (gh(string[string.indexOf("i") - 1]))
-        teste2 = 0
-    } catch {
-        teste2 = 1
-    }
+
+    let car = (string[string.indexOf("i") - 1])
+    teste2 = (car === "+" || car === "-" || car === undefined)
+    //try {
+    //    (gh(string[string.indexOf("i") - 1]))
+    //    teste2 = 0
+    //} catch {
+    //    teste2 = 1
+    //}
     
     if (string.indexOf("i") === -1) return new Co(gh(string))
     if (teste !== string.length - 1 && teste !== -1) throw new Error("Formatação inválida")
 
     if (n === -1) {
         n = string.lastIndexOf("-")
+        //if (string[string.lastIndexOf("-") - 1] === "e") n = -1
+        if (string[string.lastIndexOf("-") - 1] === "e") {
+            n = string.slice(0, string.lastIndexOf("-") - 1).lastIndexOf("-")
+        }
         p = -1
     }
 
     if (n === -1) {
-        if (teste2) return new Co(0, 1)
+        if (teste2 && string.length === 1) return new Co(0, 1)
         return new Co(0, gh(string.replace("i", "")))
     }
 
-    let real = gh(string.slice(0, n))
+    //console.log(string)
+    if (string.slice(0, n) !== "") {
+        try {
+            real = gh(string.slice(0, n))
+        } catch {real = "erro"}
+    } else real = 0
     try {
         imag = gh(string.slice(n, string.length - 1))
-    } catch {}
+    } catch {imag = "erro"}
 
     if (teste2 && p === 1) imag = 1
     if (teste2 && p === -1) imag = -1
+    if (real === "erro" ||imag === "erro") throw new Error("'a' ou 'b' são indefinidos")
     //console.log(string.slice(0, n), "qwugyeiuywqe", string.slice(n, string.length - 1))
     //console.log(string.indexOf("+"), string.indexOf("-"))
     return new Co(real, imag)
@@ -236,10 +271,28 @@ const PI = gh.acos(-1)
 module.exports = {
     Co,
     im,
-    C
+    C,
+    Ajuste
 }
 
-let x = C(2)
-x.div(2).print()
+//let x = C(2)
+//x.div(2).print()
 
 //I try change the formality
+
+//console.log(C("banana"))
+//console.log(C("bi"))
+//console.log(C("undefined"))
+//console.log(C("undefnedi"))
+//console.log(C("1+bananai"))
+//console.log(C("banana+i"))
+//console.log(C(null))
+//console.log(C(undefined))
+//console.log(C(""))
+//console.log(C())
+//console.log(C("-"))
+//console.log(C("+"))
+//console.log(C(NaN))
+//console.log(C("NaN"))
+
+C(3).print()
