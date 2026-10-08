@@ -15,7 +15,10 @@ A classe complexa tem as seguintes operações:
   sin(z): z.sin()
   cos(z): z.cos()
   tan(z): z.tan()
-  z^1/w (vulgo raiz n-ésima): z.nrt(w) (aceita w como real)
+  sec(z): z.sec()
+  csc(z): z.csc()
+  cot(z): z.cot()
+  z^(1/w) (vulgo raiz n-ésima): z.nrt(w) (aceita w como real)
   sqrt(z): z.sqrt()
   cbrt(z): z.cbrt()
   log10(z): z.log()
@@ -24,6 +27,9 @@ A classe complexa tem as seguintes operações:
   sinh(z): z.sinh()
   cosh(z): z.cosh()
   tanh(z): z.tanh()
+  sech(z): z.sech()
+  csch(z): z.csch()
+  coth(z): z.coth()
   asin(z): z.asin()
   acos(z): z.acos()
   atan(z): z.atan()
@@ -40,6 +46,13 @@ Função C:
   C("1-i") -> {real: 1, imag: -1}
   C(1) -> {real: 1, imag: 0}
   C(C(1)) -> {real: 1, imag: 0}
+  E também ele tem o modo "normal", que é idêntico ao construtor, porém com mais proteções
+  Exemplo:
+   C("asdfj", 21): trava
+   C("14", 13): passa
+   C(1, "-"): trava
+   C(1, 0): passa
+  Ele só é ativado quando existe um segundo argumentos, se não vai no modo "parser"
 
 Construtor do Co:
   Converte duas entradas (real, imag) para a classe complexa
@@ -47,6 +60,7 @@ Construtor do Co:
   Trata a entrada de uma instância como uma cópia da entrada, ex: Co(Co(1, 1)) = Co(1, 1)
   Suporta conversão polar:
   Co.Polar(1, 1): 1∠1
+  Tem proteção contra NaNm bloqueia na hora
 
 Comandos básicos:
   z.print(): Uma forma mais fácil de se visualizar o complexo, reconstruindo ele na forma a+bi
@@ -59,12 +73,26 @@ Comandos básicos:
    retorna um booleano dizendo se z é imaginário puro ou não (0 nessa convenção não é)
   z.eq(w):
    retorna um booleano dizendo se z e w são o mesmo número complexo (aceita w como real)
-  z.Neq(w)
+  z.noeq(w)
    retorna um booleano dizendo se z e w são diferentes (aceita w como real)
+  z.isNaN()
+   retorna um booleano dizendo se z tem um NaN em sua parte real ou imaginária
+  z.isFinite()
+   retorna um booleano dizendo se z é finito ou não
 
 Constantes existentes:
  im: a unidade imaginária i (Co(0, 1))
  PI: 3.1415...
+ E: número de Euler
+ TAU: 2 * PI
+ SQRT2c: sqrt(2)
+ SQRT3c: sqrt(3)
+ SQRT5c: sqrt(5)
+ LN10c: ln(10)
+ LN2c: ln(2)
+ LOG10Ec: log(E)
+ PHI: razão áurea, (1.615...)
+ Tudo isso está dentro do "invar"
 
 Outros:
  Ajuste(x):
@@ -72,4 +100,3 @@ Outros:
 
 OBS:
  irei adicionar mais coisas futuramente, isso tem potencial para caramba
-
