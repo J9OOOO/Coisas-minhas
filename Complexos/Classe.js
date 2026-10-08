@@ -71,6 +71,7 @@ class Co {
     in() {
         return this.mul(new Co(0, -1))
     }
+
     sin() {
         return ((this.i().exp()).sub((this.in().exp()))).div(new Co(0, 2))
     }
@@ -89,6 +90,7 @@ class Co {
     cot() {
         return (this.tan()).inv()
     }
+
     nrt(n) {
         n = Ajuste(n)
         return this.pow(C(1).div(n))
@@ -120,6 +122,7 @@ class Co {
     neg() {
         return C(0).sub(this)
     }
+
     sinh() {
         return (this.exp().sub((this.neg()).exp())).div(C(2))
     }
@@ -128,6 +131,15 @@ class Co {
     }
     tanh() {
         return this.sinh().div(this.cosh())
+    }
+    sech() {
+        return this.sinh().inv()
+    }
+    csch() {
+        return this.cosh().inv()
+    }
+    coth() {
+        return this.tanh().inv()
     }
 
     isReal() {
@@ -147,6 +159,9 @@ class Co {
     }
     isNaN() {
         return (isNaN(this.real) || isNaN(this.imag))
+    }
+    isFinite() {
+        return Number.isFinite(this.real) && Number.isFinite(this.imag)
     }
 
     asin() {
