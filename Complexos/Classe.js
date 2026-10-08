@@ -6,6 +6,7 @@ class Co {
             return
         }
         if (imag === undefined) imag = 0
+        if (isNaN(real) || isNaN(imag)) throw new Error("??????????")
         this.real = real
         this.imag = imag
     }
@@ -19,18 +20,25 @@ class Co {
     }
 
     add(b) {
+        b = Ajuste(b)
         return new Co(this.real + b.real, this.imag + b.imag)
     }
     sub(b) {
+        b = Ajuste(b)
         return new Co(this.real - b.real, this.imag - b.imag)
     }
     mul(b) {
+        b = Ajuste(b)
         return new Co(this.real * b.real - this.imag * b.imag, this.real * b.imag + this.imag * b.real)
     }
     div(b) {
+        b = Ajuste(b)
         let denom = b.real * b.real + b.imag * b.imag
-        if (denom === 0) throw new Error("Divisão por zero")
+        if (this.isZero(b)) throw new Error("Divisão por zero")
         return new Co((this.real * b.real + this.imag * b.imag) / denom, (this.imag * b.real - this.real * b.imag) / denom)
+    }
+    inv() {
+        return C(1).div(this)
     }
     conj() {
         return new Co(this.real, -this.imag)
@@ -46,10 +54,12 @@ class Co {
     }
     ln() {
         let r = this.r()
-        if (r.real === 0) throw new Error("ln(0) não é definido")
+        if (r.isZero()) throw new Error("ln(0) não é definido")
         return new Co(Math.log(r.real), this.theta().real)
     }
     pow(b) {
+        b = Ajuste(b)
+        if (this.isZero() && b.isReal() && (b.real > 0)) return C(0)
         let a = (b.mul(this.ln())).exp()
         if (isNaN(a.real) || isNaN(a.imag)) throw new Error("Resultado inválido")
         return a
@@ -69,8 +79,18 @@ class Co {
     tan() {
         return this.sin().div(this.cos())
     }
+    sec() {
+        return (this.cos()).inv()
+    }
+    csc() {
+        return (this.sin()).inv()
+    }
+    cot() {
+        return (this.tan()).inv()
+    }
     nrt(n) {
-        return this.pow(new Co(1, 0).div(new Co(n)))
+        n = Ajuste(n)
+        return this.pow(C(1).div(n))
     }
     sqrt() {
         return this.nrt(2)
@@ -82,6 +102,7 @@ class Co {
         return this.logn(10)
     }
     logn(n) {
+        n = Ajuste(n)
         return (this.ln().div(new Co(Math.log(n))))
     }
     print() {
@@ -114,8 +135,17 @@ class Co {
     isImag() {
         return (this.real === 0 && this.imag !== 0)
     }
+    isZero(){
+        return (this.real === 0 && this.imag === 0)
+    }
     eq(b) {
         return (this.real === b.real && this.imag === b.imag)
+    }
+    Noeq(b) {
+        return (this.real !== b.real || this.imag !== b.imag)
+    }
+    isNaN() {
+        return (isNaN(this.real) || isNaN(this.imag))
     }
 
     asin() {
@@ -125,37 +155,46 @@ class Co {
         return C(Math.PI / 2).sub(this.asin())
     }
     atan() {
-        let raz = (im.add(this)).div(im.sub(this))
+        let raz = (C(1).add(this.i())).div(C(1).sub(this.in()))
         return ((raz.ln()).i()).div(C(2))
     }
-    arcsinh() {
+    asinh() {
         return ((this.mul(this)).add(C(1)).sqrt().add(this)).ln()
     }
-    arccosh() {
+    acosh() {
         return ((this.mul(this)).sub(C(1)).sqrt().add(this)).ln()
+    }
+    atanh() {
+        return this.in().atan()
     }
 }
 
 //
 function C(string) {
+    if (string === null || string === "") throw new Error("Entrada inválida")
     //console.log(Number(string))
     if (string instanceof Co) return new Co(string)
     if (!isNaN(Number(string))) return new Co(Number(string))
     let teste = string.indexOf("i")
     let p = 1
     let n = string.indexOf("+")
-    let teste2 = isNaN(Number(string[string.indexOf("i") - 1]))
+    
+    let car = (string[string.indexOf("i") - 1])
+
+    let teste2 = (car === "+" || car === "-" || car === undefined)
+    console.log(teste2)
 
     if (string.indexOf("i") === -1) return new Co(Number(string))
     if (teste !== string.length - 1 && teste !== -1) throw new Error("Formatação inválida")
 
     if (n === -1) {
         n = string.lastIndexOf("-")
+        if (string[string.lastIndexOf("-") - 1] === "e") n = -1
         p = -1
     }
 
     if (n === -1) {
-        if (teste2) return new Co(0, 1)
+        if (teste2 && string.length === 1) return new Co(0, 1)
         return new Co(0, Number(string.replace("i", "")))
     }
 
@@ -172,10 +211,50 @@ function C(string) {
 //BRUTAL
 //
 
+function Ajuste(x) {
+    if (!(x instanceof Co)) x = C(x)
+    return x
+}
+
 const im = new Co(0, 1)
+
+const invar = {
+    PI: C(Math.PI),
+    E: C(Math.E),
+
+    TAU: C(2 * Math.PI),
+
+    SQRT2c: C(Math.SQRT2),
+    SQRT3c: C(Math.sqrt(3)),
+    SQRT5c: C(Math.sqrt(5)),
+
+    LN10c: C(Math.LN10),
+    LN2c: C(Math.LN2),
+    LOG10Ec: C(Math.LOG10E),
+    PHI: C((1 + Math.sqrt(5)) / 2)
+}
 
 module.exports = {
     Co,
     im,
-    C
+    C,
+    Ajuste,
+    invar
 }
+
+//console.log(C("banana"))
+//console.log(C("bi"))
+//console.log(C("undefined"))
+//console.log(C("undefnedi"))
+//console.log(C("1+bananai"))
+//console.log(C("banana+i"))
+//console.log(C(null))
+//console.log(C(undefined))
+//console.log(C(""))
+//console.log(C())
+//console.log(C("-"))
+//console.log(C("+"))
+//console.log(C(NaN))
+//console.log(C("NaN"))
+
+C("i").print()
