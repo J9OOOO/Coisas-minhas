@@ -141,6 +141,15 @@ class Co {
     tanh() {
         return this.sinh().div(this.cosh())
     }
+    sech() {
+        return this.sinh().inv()
+    }
+    csch() {
+        return this.cosh().inv()
+    }
+    coth() {
+        return this.tanh().inv()
+    }
 
     isReal() {
         return this.imag.isZero()
@@ -161,6 +170,9 @@ class Co {
     }
     isNaN() {
         return (this.real.isNaN() || this.imag.isNaN())
+    }
+    isFinite() {
+        return (gh.isFinite(this.real) && gh.isFinite(this.imag))
     }
 
     asin() {
