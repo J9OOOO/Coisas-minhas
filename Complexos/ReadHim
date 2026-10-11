@@ -1,3 +1,5 @@
+Versão 0.0.4 da classe complexa:
+
 A classe complexa tem as seguintes operações:
   z+w: z.add(w) (aceita w como real)
   z-w: z.sub(w) (aceita w como real)
@@ -100,3 +102,58 @@ Outros:
 
 OBS:
  irei adicionar mais coisas futuramente, isso tem potencial para caramba
+
+CalcNumComplexo:
+É o cálculo numérico para os números complexos, bem simples pois eu não entendo muito disso
+Há as seguintes funções:
+D1O:
+ Derivada de 1º ordem pela fórmula padrão (esqueci o nome, mas é (f(x+h) - f(x)) / h)
+
+D2O:
+ Derivada de 1º ordem pela diferença central
+
+limE:
+ O limite esquerdo de f(a) numa função com h ajustável, mas se não colocar o h ele deixa como 0.00001
+
+limD
+ O limite da direita de f(a) numa função com h ajustável, mas se não colocar o h ele deixa como 0.00001
+
+Somatorio:
+ Literalmente um somatório, sendo o 2º argumento o inicio do índice e o 3º o limite dele
+
+Produtorio:
+ Literalmente um produtório, sendo o 2º argumento o inicio do índice e o 3º o limite dele
+
+Rie:
+ A soma de Riemann inferior sendo os limites (a, b) sendo os argumentos 2º e 3º e o 4º a quantidade de retângulos
+
+Tra:
+ O método dos trapézios, sendo os limites (a, b) sendo os argumentos 2º e 3º e o 4º a quantidade deles
+
+Sim:
+ O método de Simpson, sendo os limites (a, b) sendo os argumentos 2º e 3º e o 4º a quantidade deles
+
+Todos os métodos numéricos de integração explicados podem falhar se a região entre os limites tiver algum valor indefinido
+
+Gamma:
+ A função gamma, mas infelizmente eu não consegui fazer uma versão decente, a precisão é baixa demais, e eu recomendo que você recrie um se quiser usar, sério
+
+NewtonI:
+ Uma iteração do método de Newton, sendo o 2º argumento o chute inicial e o 3º o valor do h na derivada
+
+W:
+ A função W, sendo o argumento o valor de x
+
+erf:
+ A função erro, sendo o argumento o valor de x
+
+NewtonCBAS:
+ O método de Newton aplicado a várias iterações de uma vez, porém, ele não é protegido contra falhas na convergência, foi algo feito só para buscar as raízes de um polinômio rapidamente
+
+t:
+ Se o argumento não for instância de Co, ele dá erro
+
+pda:
+ Se o argumento não for finito ou NaN, ele dá erro
+
+OBS: não trate essa parte como se fosse 100% funcional, eu só fiz uma extensão extra da biblioteca
