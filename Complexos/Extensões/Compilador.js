@@ -1,6 +1,6 @@
-const Ca = require('./Complexos V9')
-const a = require('C:/Calculadora')
-const p = require('./sadf.js');
+const Ca = require('../Complexos V9')
+const a = require('../depen/Calculadora')
+const p = require('../depen/sadf.js');
 
 let listaOp = []
 const conv = {
