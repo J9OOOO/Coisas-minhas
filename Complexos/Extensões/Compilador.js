@@ -1,5 +1,4 @@
 const Ca = require('../Complexos V9')
-//const a = require('../depen/Calculadora') TALVEZ NÃO PRECISE
 const p = require('../depen/sadf.js');
 
 let listaOp = []
