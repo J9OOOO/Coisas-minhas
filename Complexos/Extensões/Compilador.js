@@ -1,5 +1,5 @@
 const Ca = require('../Complexos V9')
-const a = require('../depen/Calculadora')
+//const a = require('../depen/Calculadora') TALVEZ NÃO PRECISE
 const p = require('../depen/sadf.js');
 
 let listaOp = []
@@ -112,7 +112,12 @@ const valor = x => {
 }
 
 function conversor(lista) {
-    return a.par.conversor(lista)
+    for(let i = 0; i < lista.length; i++) {
+        if (typeof lista[i] === "string") {
+            lista[i] = conv[lista[i]];
+        }
+    }
+    return lista
 }
 
 function Resolver(lista, I) {
