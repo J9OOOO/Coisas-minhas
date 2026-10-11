@@ -177,7 +177,7 @@ class Co {
         return (this.real.isNaN() || this.imag.isNaN())
     }
     isFinite() {
-        return (gh.isFinite(this.real) && gh.isFinite(this.imag))
+        return ((this.real).isFinite() && (this.imag).isFinite())
     }
 
     asin() {
@@ -196,7 +196,7 @@ class Co {
     acosh() {
         return ((this.mul(this)).sub(C(1)).sqrt().add(this)).ln()
     }
-     atanh() {
+    atanh() {
         return this.in().atan().i()
     }
 }
