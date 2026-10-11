@@ -1,21 +1,33 @@
 class Co {
     constructor(real, imag) {
         if (real instanceof Co) {
+            if(imag !== undefined) throw new Error("real inválido")
             this.real = real.real
             this.imag = real.imag
             return
         }
         if (imag === undefined) imag = 0
+
+        real = Number(real)
+        imag = Number(imag)
+
         if (isNaN(real) || isNaN(imag)) throw new Error("??????????")
+
         this.real = real
         this.imag = imag
     }
 
     static Polar(r, theta) {
         if (r instanceof Co) {
+            if (theta !== undefined) throw new Error("r inválido")
             return new Co(r)
         }
         if (theta === undefined) theta = 0
+
+        r = Number(r)
+        theta = Number(theta)
+
+        if (r < 0) throw new Error("R não pode ser menor que 0")
         if (isNaN(r) || isNaN(theta)) throw new Error("??????????")
         return new Co(r * Math.cos(theta), r * Math.sin(theta))
     }
@@ -62,7 +74,7 @@ class Co {
         b = Ajuste(b)
         if (this.isZero() && b.isReal() && (b.real > 0)) return C(0)
         let a = (b.mul(this.ln())).exp()
-        if (isNaN(a.real) || isNaN(a.imag)) throw new Error("Resultado inválido")
+        if (a.isNaN()) throw new Error("Resultado inválido")
         return a
     }
     i() {
@@ -133,10 +145,10 @@ class Co {
         return this.sinh().div(this.cosh())
     }
     sech() {
-        return this.sinh().inv()
+        return this.cosh().inv()
     }
     csch() {
-        return this.cosh().inv()
+        return this.sinh().inv()
     }
     coth() {
         return this.tanh().inv()
@@ -171,7 +183,7 @@ class Co {
         return C(Math.PI / 2).sub(this.asin())
     }
     atan() {
-        let raz = (C(1).add(this.i())).div(C(1).sub(this.in()))
+        let raz = (im.add(this)).div(im.sub(this))
         return ((raz.ln()).i()).div(C(2))
     }
     asinh() {
@@ -181,7 +193,7 @@ class Co {
         return ((this.mul(this)).sub(C(1)).sqrt().add(this)).ln()
     }
     atanh() {
-        return this.in().atan()
+        return this.in().atan().i()
     }
 }
 
@@ -283,4 +295,4 @@ module.exports = {
 //console.log(C(NaN))
 //console.log(C("NaN"))
 
-C("i").print()
+//C(-8).cbrt().print()
