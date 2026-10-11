@@ -1,6 +1,6 @@
-const Ca = require('./Untitled-1')
-//Faça './Untitled-1' para a classe de precisão arbitrária
-//Faça './Complexos V9' para a classe normal
+const Ca = require('../Untitled-1')
+//Faça '../Untitled-1' para a classe de precisão arbitrária
+//Faça '../Complexos V9' para a classe normal
 
 //Biblioteca do cálculo numérico complexo (auraxxxxxxxxxxxxxxxxxxxxxx)
 
