@@ -5,6 +5,7 @@ gh.set({ precision: 100 });
 class Co {
     constructor(real, imag) {
         if (real instanceof Co) {
+            if(imag !== undefined) throw new Error("real inválido")
             this.real = gh(real.real)
             this.imag = gh(real.imag)
             return
@@ -20,12 +21,16 @@ class Co {
 
     static Polar(r, theta) {
         if (r instanceof Co) {
+            if(theta !== undefined) throw new Error("r inválido")
             return new Co(r)
         }
-        if (theta === undefined) theta = 0
-        if (r.isNaN() || theta.isNaN()) throw new Error("??????????")
+        if (theta === undefined) theta = gh(0)
         r = gh(r)
         theta = gh(theta)
+
+        if (r.isNaN() || theta.isNaN()) throw new Error("??????????")
+        if (r.lt(0)) throw new Error("R menor que 0 não é válido")
+
         return new Co(r.times(theta.cos()), r.times(theta.sin()))
     }
 
@@ -72,7 +77,7 @@ class Co {
         if (this.isZero() && b.isReal && b.real.gt(gh(0))) return C(0)
         if (!(b instanceof Co)) b = C(b)
         let a = (b.mul(this.ln())).exp()
-        //if (isNaN(a.real) || isNaN(a.imag)) throw new Error("Resultado inválido")
+        if (a.isNaN()) throw new Error("Resultado inválido")
         return a
     }
     i() {
@@ -142,10 +147,10 @@ class Co {
         return this.sinh().div(this.cosh())
     }
     sech() {
-        return this.sinh().inv()
+        return this.cosh().inv()
     }
     csch() {
-        return this.cosh().inv()
+        return this.sinh().inv()
     }
     coth() {
         return this.tanh().inv()
@@ -185,19 +190,27 @@ class Co {
         let raz = (im.add(this)).div(im.sub(this))
         return ((raz.ln()).i()).div(C(2))
     }
-    arcsinh() {
+    asinh() {
         return ((this.mul(this)).add(C(1)).sqrt().add(this)).ln()
     }
-    arccosh() {
+    acosh() {
         return ((this.mul(this)).sub(C(1)).sqrt().add(this)).ln()
     }
-    atanh() {
-        return this.in().atan()
+     atanh() {
+        return this.in().atan().i()
     }
 }
 
 //
 function C(string, ino) {
+    if (string instanceof Co && string.isReal()) string = string.real
+    if (ino instanceof Co && ino.isReal()) ino = ino.real
+
+    if (string instanceof Co) {
+        if (ino !== undefined) throw new Error("a inválido")
+        return new Co(string)
+    }
+    if (ino instanceof Co) throw new Error("b inválido")
     //MODO "NORMAL"
     if (ino !== undefined) {
         let real, imag
@@ -278,13 +291,29 @@ function Ajuste(x) {
 }
 
 const im = new Co(0, 1)
-const PI = gh.acos(-1)
+
+const invar = {
+    PI: C(gh.acos(-1)),
+    E: C(gh(1).exp()),
+
+    TAU: C(C(gh.acos(-1)).mul(2)),
+
+    SQRT2c: C(gh(2).sqrt()),
+    SQRT3c: C(gh(3).sqrt()),
+    SQRT5c: C(gh(5).sqrt()),
+
+    LN10c: C(gh(10).ln()),
+    LN2c: C(gh(2).ln()),
+    LOG10Ec: C(Math.LOG10E),
+    PHI: C((gh(1).add(gh(5).sqrt())).div(gh(2)))
+}
 
 module.exports = {
     Co,
     im,
     C,
-    Ajuste
+    Ajuste,
+    invar
 }
 
 //let x = C(2)
@@ -304,7 +333,10 @@ module.exports = {
 //console.log(C())
 //console.log(C("-"))
 //console.log(C("+"))
-//console.log(C(NaN))
+//console.log(C(NaN))i
 //console.log(C("NaN"))
 
-C(3).print()
+//C(0, invar.PI).exp().add(1).print()
+//e^ipi+1=0
+
+C(1, -1).atan().print()
