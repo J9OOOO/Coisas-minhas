@@ -1,4 +1,4 @@
-Versão 0.0.4 da classe complexa:
+Versão 0.0.6 da classe complexa:
 
 A classe complexa tem as seguintes operações:
   z+w: z.add(w) (aceita w como real)
@@ -42,7 +42,7 @@ A classe complexa tem as seguintes operações:
   Im(z): z.imag
 
 Função C:
-  Converte strings do tipo a+bi e literais numéricos para a classe complexa, e também funciona se utilizaar C(C(1)), por exemplo
+  Converte strings do tipo a+bi e literais numéricos para a classe complexa, e também funciona se utilizar C(C(1)), por exemplo
   Exemplos:
   C("1+12i") -> {real: 1, imag: 12}
   C("1-i") -> {real: 1, imag: -1}
@@ -54,7 +54,21 @@ Função C:
    C("14", 13): passa
    C(1, "-"): trava
    C(1, 0): passa
-  Ele só é ativado quando existe um segundo argumentos, se não vai no modo "parser"
+
+  Ele também tem o modo polar, sendo arb sendo (a, b) reais
+   Exemplos:
+    C("1r1")
+    C("2r1")
+    C("1e3r3e-10")
+   Apenas não suporta partido, tipo:
+    C("1r")
+    C("r1")
+  Também suporta um modo explícito:
+   C(1, 1, 0) -> {real: 1, imag: 1}
+   C(1, 1) -> {real: 1, imag: 1}
+   C(1, 1, 1) -> {real: 0.5403023058681398, imag: 0.8414709848078965}
+  
+  Ele o sistema trava se o 1º argumento for um cartesiano / polar implícito, mas ter o 2º e 3º definido, ele dá falha
 
 Construtor do Co:
   Converte duas entradas (real, imag) para a classe complexa
@@ -63,6 +77,7 @@ Construtor do Co:
   Suporta conversão polar:
   Co.Polar(1, 1): 1∠1
   Tem proteção contra NaN, bloqueia na hora
+  Não suporta r < 0, dá erro
 
 Comandos básicos:
   z.print(): Uma forma mais fácil de se visualizar o complexo, reconstruindo ele na forma a+bi
@@ -81,6 +96,8 @@ Comandos básicos:
    retorna um booleano dizendo se z tem um NaN em sua parte real ou imaginária
   z.isFinite()
    retorna um booleano dizendo se z é finito ou não
+  z.DigitRemov(n)
+   retorna o número limitado a quantidade de dígitos "n", se não for real puro, trava
 
 Constantes existentes:
  im: a unidade imaginária i (Co(0, 1))
