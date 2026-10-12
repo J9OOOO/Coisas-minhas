@@ -1,7 +1,7 @@
 class Co {
     constructor(real, imag) {
         if (real instanceof Co) {
-            if(imag !== undefined) throw new Error("real inválido")
+            if(imag !== undefined) throw new Error(`real inválido: ${real}`)
             this.real = real.real
             this.imag = real.imag
             return
@@ -11,7 +11,7 @@ class Co {
         real = Number(real)
         imag = Number(imag)
 
-        if (isNaN(real) || isNaN(imag)) throw new Error("??????????")
+        if (isNaN(real) || isNaN(imag)) throw new Error(`??????????: , ${real}, ${imag}`)
 
         this.real = real
         this.imag = imag
@@ -19,7 +19,7 @@ class Co {
 
     static Polar(r, theta) {
         if (r instanceof Co) {
-            if (theta !== undefined) throw new Error("r inválido")
+            if (theta !== undefined) throw new Error(`r inválido: ${r}`)
             return new Co(r)
         }
         if (theta === undefined) theta = 0
@@ -28,7 +28,7 @@ class Co {
         theta = Number(theta)
 
         if (r < 0) throw new Error("R não pode ser menor que 0")
-        if (isNaN(r) || isNaN(theta)) throw new Error("??????????")
+        if (isNaN(r) || isNaN(theta)) throw new Error(`??????????: ${r}, ${theta}`)
         return new Co(r * Math.cos(theta), r * Math.sin(theta))
     }
 
@@ -120,16 +120,37 @@ class Co {
         n = Ajuste(n)
         return (this.ln().div(new Co(Math.log(n))))
     }
-    print() {
-        if (isNaN(this.real + this.imag)) throw new Error("Número inválido")
-        if (this.imag === 0) return console.log(`${this.real}`)
-        if (this.real === 0 && this.imag === 1) return console.log(`i`)
-        if (this.real === 0 && this.imag === -1) return console.log(`-i`)
-        if (this.real === 0) return console.log(`${this.imag}i`)
-        if (this.imag === 1) return console.log(`${this.real} + i`)
-        if (this.imag === -1) return console.log(`${this.real} - i`)
-        if (this.imag < 0) return console.log(`${this.real} - ${Math.abs(this.imag)}i`)
-        return console.log(`${this.real} + ${this.imag}i`)
+    print(tipo) {
+        if (tipo === undefined) tipo = "c"
+        if (tipo === "c") {
+            if (isNaN(this.real + this.imag)) throw new Error("Número inválido")
+            if (this.imag === 0) return console.log(`${this.real}`)
+            if (this.real === 0 && this.imag === 1) return console.log(`i`)
+            if (this.real === 0 && this.imag === -1) return console.log(`-i`)
+            if (this.real === 0) return console.log(`${this.imag}i`)
+            if (this.imag === 1) return console.log(`${this.real} + i`)
+            if (this.imag === -1) return console.log(`${this.real} - i`)
+            if (this.imag < 0) return console.log(`${this.real} - ${Math.abs(this.imag)}i`)
+            return console.log(`${this.real} + ${this.imag}i`)
+        }
+        if (tipo === "p") {
+            let r = this.r()
+            let arg = this.theta()
+            if (arg.isZero()) return console.log(`${r.real}`)
+            if (r.isZero()) return console.log(0)
+            if (r.eq(1) && arg.eq(1)) return console.log(`e ** i`)
+            if (r.eq(1) && arg.eq(-1)) return console.log(`e ** (-i)`)
+            if (r.eq(1) && arg.noeq(1) && arg.noeq(-1)) return console.log(`e ** (${arg.real}i)`)
+            if (arg.eq(1)) return console.log(`${r.real} * e ** i`)
+            if (arg.eq(-1)) return console.log(`${r.real} * e ** (-i)`)
+            return console.log(`${r.real} * e ** (${arg.real}i)`)
+        }
+        if (tipo === "pa") {
+            let r = this.r()
+            let arg = this.theta()
+            return console.log(`${r.real} ∠ ${arg.real}`)
+        }
+        throw new Error(`tipo inválido: ${tipo}`)
     }
     neg() {
         return C(0).sub(this)
@@ -164,6 +185,7 @@ class Co {
         return (this.real === 0 && this.imag === 0)
     }
     eq(b) {
+        b = Ajuste(b)
         return (this.real === b.real && this.imag === b.imag)
     }
     noeq(b) {
@@ -194,6 +216,14 @@ class Co {
     }
     atanh() {
         return this.in().atan().i()
+    }
+    DigitRemov(n) {
+        if (n instanceof Co) {
+            if (n.isReal()) {
+                n = n.real
+            } else throw new Error("Valor inválido")
+        }
+        return C(this.real.toDecimalPlaces(n, gh.ROUND_DOWN), this.imag.toDecimalPlaces(n, gh.ROUND_DOWN))
     }
 }
 
@@ -295,4 +325,4 @@ module.exports = {
 //console.log(C(NaN))
 //console.log(C("NaN"))
 
-//C(-8).cbrt().print()
+C(1).print("werf")
