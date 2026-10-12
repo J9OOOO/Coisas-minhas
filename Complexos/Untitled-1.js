@@ -231,85 +231,160 @@ class Co {
     }
 }
 
-//
-function C(string, ino) {
-    if (string instanceof Co && string.isReal()) string = string.real
-    if (ino instanceof Co && ino.isReal()) ino = ino.real
+//Aqui eu vou ver o que dá problema e resolver tudo, não sei o que cada coisa faz em Decimal
+function Cpp(string) {
 
-    if (string instanceof Co) {
-        if (ino !== undefined) throw new Error("a inválido")
-        return new Co(string)
-    }
-    if (ino instanceof Co) throw new Error("b inválido")
-    //MODO "NORMAL"
-    if (ino !== undefined) {
-        let real, imag
-        if (string === null || string === undefined || ino === null || ino === undefined) throw new Error("Entrada inválida")
+    //Barragem
+    if (string === null || string === undefined || (typeof string === "string" && string.trim() === "")) throw new Error("Valor inválido")
+    //Barragem
+
+    if (typeof string === "string") {
+    //string = string.replace("I", "i")
+    let i = string.indexOf("i")
+
+    if (i === -1) {
+        let r
         try {
-        real = gh(string)
-        imag = gh(ino)
-        } catch {throw new Error("'a' ou 'b' inválidos")}
-        return new Co(real, imag)
+            r = gh(string)
+        } catch {throw new Error(`Valor inválido: ${string}`)}
+        return new Co(r)
     }
-    
-    //MODO PARSER
-    if (string === null || string === "" || string === undefined) throw new Error("Entrada inválida")
-    let teste2, imag, real
-    //console.log((string))
-    if (string instanceof Co) return new Co(string)
-    try {
-        //console.log(new Co(gh(string)))
-        gh(string)
-        return new Co(gh(string))
-    } catch {
+    if (i !== string.length - 1) throw new Error("Formatação inválida")
 
-    let teste = string.indexOf("i")
-    let p = 1
-    let n = string.indexOf("+")
+    //let LimIMais = string.indexOf("+")
+    let LimIIMais = string.lastIndexOf("+")
 
-    let car = (string[string.indexOf("i") - 1])
-    teste2 = (car === "+" || car === "-" || car === undefined)
-    //try {
-    //    (gh(string[string.indexOf("i") - 1]))
-    //    teste2 = 0
-    //} catch {
-    //    teste2 = 1
-    //}
-    
-    if (string.indexOf("i") === -1) return new Co(gh(string))
-    if (teste !== string.length - 1 && teste !== -1) throw new Error("Formatação inválida")
+    //let LimIMenos = string.indexOf("-")
+    let LimIIMenos = string.lastIndexOf("-")
 
-    if (n === -1) {
-        n = string.lastIndexOf("-")
-        //if (string[string.lastIndexOf("-") - 1] === "e") n = -1
-        if (string[string.lastIndexOf("-") - 1] === "e") {
-            n = string.slice(0, string.lastIndexOf("-") - 1).lastIndexOf("-")
-        }
-        p = -1
+    if (string[LimIIMenos - 1] === "e") LimIIMenos = string.slice(0, LimIIMenos - 1).lastIndexOf("-")
+    if (string[LimIIMais - 1] === "e") LimIIMais = string.slice(0, LimIIMais - 1).lastIndexOf("+")
+
+    let LimS
+
+    //!isNaN(Number(string[LimIIMais - 1])) = try {gh(string[LimIIMais - 1]), LIMITE1 = true} catch {LIMITE1 = false}
+    let LIM1, LIM2, LIM3, LIM4
+    LIM1 = Val(string[LimIIMais - 1])
+    LIM2 = Val(string[LimIIMais + 1])
+    LIM3 = Val(string[LimIIMenos - 1])
+    LIM4 = Val(string[LimIIMenos + 1])
+    //isNaN não funciona aqui... (como eu preciso)
+    //console.log(LIM1, LIM2, LIM3, LIM4)
+    //console.log(LimIIMais)
+
+
+
+    if (LIM1 && (LIM2 || string[LimIIMais + 1] === "i")) LimS = LimIIMais
+    if (LIM3 && (LIM4 || string[LimIIMenos + 1] === "i")) LimS = LimIIMenos
+
+    //console.log(string.slice(0, LimI), LimI)
+    //console.log(string.slice(0, LimII), LimII)
+    let RealS = string.slice(0, LimS)
+    let ImagS = string.slice(LimS, string.length)
+    let real, imag
+    //console.log(LimS)
+    //console.log(RealS, ImagS)
+
+    if (RealS === ImagS) {
+        //console.log(RealS === ImagS)
+        if ((string[0] === "+" && string.length === 2)|| string[0] === "i") return new Co(0, 1)
+        if (string[0] === "-" && string.length === 2) return new Co(0, -1)
+        return new Co(0, string.slice(0, string.length - 1))
     }
 
-    if (n === -1) {
-        if (teste2 && string.length === 1) return new Co(0, 1)
-        return new Co(0, gh(string.replace("i", "")))
-    }
+    if (ImagS.length === 2 && ImagS[0] === "+") imag = 1
+    if (ImagS.length === 2 && ImagS[0] === "-") imag = -1
 
-    //console.log(string)
-    if (string.slice(0, n) !== "") {
-        try {
-            real = gh(string.slice(0, n))
-        } catch {real = "erro"}
-    } else real = 0
-    try {
-        imag = gh(string.slice(n, string.length - 1))
-    } catch {imag = "erro"}
+    //console.log(RealS)
+    //console.log(ImagS)
 
-    if (teste2 && p === 1) imag = 1
-    if (teste2 && p === -1) imag = -1
-    if (real === "erro" ||imag === "erro") throw new Error("'a' ou 'b' são indefinidos")
-    //console.log(string.slice(0, n), "qwugyeiuywqe", string.slice(n, string.length - 1))
-    //console.log(string.indexOf("+"), string.indexOf("-"))
+    //Barragem
+
+    //Barragem
+
+    if (imag === undefined) try {imag = gh(ImagS.slice(0, ImagS.length - 1))} catch {throw new Error(`Valor inválido: ${ImagS}`)}
+    try {real = gh(RealS)} catch {throw new Error(`Valor inválido: ${RealS}`)}
+
+    //console.log(imag)
+
+    //console.log(real)
+    //console.log(imag)
+    //console.log(ImagS.slice(0, ImagS.length - 2))
+
     return new Co(real, imag)
     }
+    if (string instanceof Co) return new Co(string)
+    
+    let Valor
+
+    try {Valor = gh(string)} catch {throw new Error(`Valor inválido: ${string}`)}
+
+    return new Co(Valor)
+}
+
+function C(a, b, t) {
+    if (t !== 0 && t !== 1 && t !== undefined) throw new Error(`Configuração inválida: t = ${t}`)
+
+    let Cartesiano = t === 0 || t === undefined
+    let Polar = t === 1
+
+    if (typeof a === "string") {
+
+    a = a.replace("I", "i")
+    a = a.replace("R", "r")
+
+    if (a.indexOf("r") !== -1) {Cartesiano = false, Polar = true, a = a.replace(/\s+/g, ""); if (b !== undefined || t !== undefined) throw new Error(`a inválido: ${a}`)}
+    if (a.indexOf("i") !== -1) {Cartesiano = true, Polar = false, a = a.replace(/\s+/g, ""); if (b !== undefined || t !== undefined) throw new Error(`a inválido: ${a}`)}
+
+    }
+    
+    //console.log(Polar)
+
+    let Na, Nb
+    try {
+        gh(a)
+        Na = false
+    } catch {Na = true}
+
+    try {
+        gh(b)
+        Nb = false
+    } catch {Nb = true}
+
+    if (b === undefined && Cartesiano) return Cpp(a)
+    if (b === undefined && Polar) return Cpo(a)
+
+    if (a === null || Na || (typeof a === "string" && a.trim() === "")) throw new Error(`a inválido: ${a}`)
+    if (b === null || Nb || (typeof b === "string" && b.trim() === "")) throw new Error(`b inválido: ${b}`)
+
+    if (Cartesiano) return new Co(a, b)
+    if (Polar) return Co.Polar(a, b)
+}
+
+function Cpo(string) {
+
+    //Barragem
+    if (string === null || string === undefined || (typeof string === "string" && string.trim() === "")) throw new Error(`Valor inválido: ${string}`)
+    //Barragem
+
+    if (typeof string === "string") {
+        //string = string.replace("R", "r")
+        let r = string.indexOf("r")
+        if (r === -1) return Co.Polar(gh(string))
+        
+        try {gh(string[r - 1])} catch {throw new Error(`Formatação inválida: ${string}`)}
+
+        let raio = gh(string.slice(0, r))
+        let argumento = gh(string.slice(r + 1, string.length))
+
+        //console.log(raio, argumento)
+
+        return Co.Polar(raio, argumento)
+
+    }
+    try {return Co.Polar(gh(string), 0)} catch {}
+    if (string instanceof Co) return Co.Polar(string)
+    throw new Error(`Valor impossível de ser convertido: ${string}`)
 }
 
 //BRUTAL
@@ -318,6 +393,10 @@ function C(string, ino) {
 function Ajuste(x) {
     if (!(x instanceof Co)) x = C(x)
     return x
+}
+
+function Val(s) {
+    try { gh(s); return true } catch { return false }
 }
 
 const im = new Co(0, 1)
@@ -370,3 +449,5 @@ module.exports = {
 //e^ipi+1=0
 
 //C(Infinity).mul(1).print()
+
+C("12+2i").print()
