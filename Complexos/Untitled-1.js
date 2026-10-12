@@ -67,6 +67,7 @@ class Co {
     exp() {
         return new Co(((this.imag).cos()).times((this.real).exp()), (this.imag.sin()).times((this.real).exp()))
     }
+    //SALVE EULER
     ln() {
         let r = this.r()
         if (r.eq(C(0))) throw new Error("ln(0) não é definido")
@@ -123,16 +124,37 @@ class Co {
         n = Ajuste(n)
         return (this.ln().div(new Co(n.ln())))
     }
-    print() {
+    print(tipo) {
         //if (isNaN(this.real.add(this.imag))) throw new Error("Número inválido")
-        if (this.imag.isZero()) return console.log(`${this.real}`)
-        if (this.real.isZero() && this.imag.eq(1)) return console.log(`i`)
-        if (this.real.isZero() && this.imag.eq(-1)) return console.log(`-i`)
-        if (this.real.isZero()) return console.log(`${this.imag}i`)
-        if (this.imag.eq(1)) return console.log(`${this.real} + i`)
-        if (this.imag.eq(-1)) return console.log(`${this.real} - i`)
-        if (this.imag.isNeg()) return console.log(`${this.real} - ${this.imag.abs()}i`)
-        return console.log(`${this.real} + ${this.imag}i`)
+        if (tipo === undefined) tipo = "c"
+        if (tipo === "c") {
+            if (this.imag.isZero()) return console.log(`${this.real}`)
+            if (this.real.isZero() && this.imag.eq(1)) return console.log(`i`)
+            if (this.real.isZero() && this.imag.eq(-1)) return console.log(`-i`)
+            if (this.real.isZero()) return console.log(`${this.imag}i`)
+            if (this.imag.eq(1)) return console.log(`${this.real} + i`)
+            if (this.imag.eq(-1)) return console.log(`${this.real} - i`)
+            if (this.imag.isNeg()) return console.log(`${this.real} - ${this.imag.abs()}i`)
+            return console.log(`${this.real} + ${this.imag}i`)
+        }
+        if (tipo === "p") {
+            let r = this.r()
+            let arg = this.theta()
+            if (arg.isZero()) return console.log(`${r.real}`)
+            if (r.isZero()) return console.log(0)
+            if (r.eq(1) && arg.eq(1)) return console.log(`e ** i`)
+            if (r.eq(1) && arg.eq(-1)) return console.log(`e ** (-i)`)
+            if (r.eq(1) && arg.noeq(1) && arg.noeq(-1)) return console.log(`e ** (${arg.real}i)`)
+            if (arg.eq(1)) return console.log(`${r.real} * e ** i`)
+            if (arg.eq(-1)) return console.log(`${r.real} * e ** (-i)`)
+            return console.log(`${r.real} * e ** (${arg.real}i)`)
+        }
+        if (tipo === "pa") {
+            let r = this.r()
+            let arg = this.theta()
+            return console.log(`${r.real} ∠ ${arg.real}`)
+        }
+        throw new Error(`tipo inválido: ${tipo}`)
     }
     neg() {
         return C(0).sub(this)
@@ -198,6 +220,14 @@ class Co {
     }
     atanh() {
         return this.in().atan().i()
+    }
+    DigitRemov(n) {
+        if (n instanceof Co) {
+            if (n.isReal()) {
+                n = n.real
+            } else throw new Error("Valor inválido")
+        }
+        return C(this.real.toDecimalPlaces(n, gh.ROUND_DOWN), this.imag.toDecimalPlaces(n, gh.ROUND_DOWN))
     }
 }
 
@@ -336,7 +366,7 @@ module.exports = {
 //console.log(C(NaN))i
 //console.log(C("NaN"))
 
-//C(0, invar.PI).exp().add(1).print()
+//C(0, invar.PI).exp().add(1).DigitRemov(99).print()
 //e^ipi+1=0
 
-C(1, -1).atan().print()
+//C(Infinity).mul(1).print()
