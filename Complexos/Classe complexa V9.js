@@ -228,52 +228,128 @@ class Co {
 }
 
 //
-function C(string, ino) {
-    //MODO "NORMAL"
-    if (ino !== undefined) {
-        if (string === null || string === undefined || ino === null || ino === undefined) throw new Error("Entrada inválida")
-        let real = Number(string)
-        let imag = Number(ino)
-        if (isNaN(real) || isNaN(imag)) throw new Error("'a' ou 'b' inválidos")
-        return new Co(real, imag)
+function Cpp(string) {
+
+    //Barragem
+    if (string === null || string === undefined || (typeof string === "string" && string.trim() === "")) throw new Error("Valor inválido")
+    //Barragem
+
+    if (typeof string === "string") {
+    string = string.replace("I", "i")
+    let i = string.indexOf("i")
+
+    if (i === -1) {
+        let r = Number(string)
+        if (isNaN(r)) throw new Error("Valor inválido")
+        return new Co(r)
+    }
+    if (i !== string.length - 1) throw new Error("Formatação inválida")
+
+    //let LimIMais = string.indexOf("+")
+    let LimIIMais = string.lastIndexOf("+")
+
+    //let LimIMenos = string.indexOf("-")
+    let LimIIMenos = string.lastIndexOf("-")
+
+    if (string[LimIIMenos - 1] === "e") LimIIMenos = string.slice(0, LimIIMenos - 1).lastIndexOf("-")
+    if (string[LimIIMais - 1] === "e") LimIIMais = string.slice(0, LimIIMais - 1).lastIndexOf("+")
+
+    let LimS
+
+    //ESSE PARÊNTESES, MANO
+    if (!isNaN(Number(string[LimIIMais - 1])) && (!isNaN(Number(string[LimIIMais + 1])) || string[LimIIMais + 1] === "i")) LimS = LimIIMais
+    if (!isNaN(Number(string[LimIIMenos - 1])) && (!isNaN(Number(string[LimIIMenos + 1])) || string[LimIIMenos + 1] === "i")) LimS = LimIIMenos
+
+    //console.log(string.slice(0, LimI), LimI)
+    //console.log(string.slice(0, LimII), LimII)
+    let RealS = string.slice(0, LimS)
+    let ImagS = string.slice(LimS, string.length)
+    let real, imag
+    //console.log(LimS)
+
+    if (RealS === ImagS) {
+        //console.log(RealS === ImagS)
+        if ((string[0] === "+" && string.length === 2)|| string[0] === "i") return new Co(0, 1)
+        if (string[0] === "-" && string.length === 2) return new Co(0, -1)
+        return new Co(0, string.slice(0, string.length - 1))
     }
 
-    //MODO PARSER
-    if (string === null || string === "" || string === undefined) throw new Error("Entrada inválida")
-    //console.log(Number(string))
-    if (string instanceof Co) return new Co(string)
-    if (!isNaN(Number(string))) return new Co(Number(string))
-    let teste = string.indexOf("i")
-    let p = 1
-    let n = string.indexOf("+")
-    
-    let car = (string[string.indexOf("i") - 1])
+    if (ImagS.length === 2 && ImagS[0] === "+") imag = 1
+    if (ImagS.length === 2 && ImagS[0] === "-") imag = -1
 
-    let teste2 = (car === "+" || car === "-" || car === undefined)
-    //console.log(teste2)
+    //console.log(RealS)
+    //console.log(ImagS)
 
-    if (string.indexOf("i") === -1) return new Co(Number(string))
-    if (teste !== string.length - 1 && teste !== -1) throw new Error("Formatação inválida")
+    //Barragem
 
-    if (n === -1) {
-        n = string.lastIndexOf("-")
-        if (string[string.lastIndexOf("-") - 1] === "e") n = -1
-        p = -1
-    }
+    //Barragem
 
-    if (n === -1) {
-        if (teste2 && string.length === 1) return new Co(0, 1)
-        return new Co(0, Number(string.replace("i", "")))
-    }
+    if (imag === undefined) imag = Number(ImagS.slice(0, ImagS.length - 1))
+    real = Number(RealS)
 
-    let real = Number(string.slice(0, n))
-    let imag = Number(string.slice(n, string.length - 1))
+    //console.log(imag)
 
-    if (teste2 && p === 1) imag = 1
-    if (teste2 && p === -1) imag = -1
-    //console.log(string.slice(0, n), "qwugyeiuywqe", string.slice(n, string.length - 1))
-    //console.log(string.indexOf("+"), string.indexOf("-"))
+    //console.log(real)
+    //console.log(imag)
+    //console.log(ImagS.slice(0, ImagS.length - 2))
+
     return new Co(real, imag)
+    }
+    if (string instanceof Co) return new Co(string)
+    if (isNaN(string)) throw new Error("Valor inválido")
+
+    return new Co(Number(string))
+}
+
+function C(a, b, t) {
+    if (t !== 0 && t !== 1 && t !== undefined) throw new Error(`Configuração inválida: t = ${t}`)
+
+    let Cartesiano = t === 0 || t === undefined
+    let Polar = t === 1
+
+    if (typeof a === "string") {
+
+    if (a.indexOf("r") !== -1) {Cartesiano = false, Polar = true, a = a.replace(/\s+/g, ""); if (b !== undefined || t !== undefined) throw new Error("a inválido")}
+    if (a.indexOf("i") !== -1) {Cartesiano = true, Polar = false, a = a.replace(/\s+/g, ""); if (b !== undefined || t !== undefined) throw new Error("a inválido")}
+
+    }
+    
+    //console.log(Polar)
+
+    if (b === undefined && Cartesiano) return Cpp(a)
+    if (b === undefined && Polar) return Cpo(a)
+
+    if (a === null || isNaN(Number(a)) || (typeof a === "string" && a.trim() === "")) throw new Error("a inválido")
+    if (b === null || isNaN(Number(b)) || (typeof b === "string" && b.trim() === "")) throw new Error("b inválido")
+
+    if (Cartesiano) return new Co(a, b)
+    if (Polar) return Co.Polar(a, b)
+}
+
+function Cpo(string) {
+
+    //Barragem
+    if (string === null || string === undefined || (typeof string === "string" && string.trim() === "")) throw new Error(`Valor inválido: ${string}`)
+    //Barragem
+
+    if (typeof string === "string") {
+        string = string.replace("R", "r")
+        let r = string.indexOf("r")
+        if (r === -1) return Co.Polar(Number(string))
+        
+        if (isNaN(Number(string[r - 1]))) throw new Error(`Formatação inválida: ${string}`)
+
+        let raio = Number(string.slice(0, r))
+        let argumento = Number(string.slice(r + 1, string.length))
+
+        //console.log(raio, argumento)
+
+        return Co.Polar(raio, argumento)
+
+    }
+    if (!isNaN(Number(string))) return Co.Polar(Number(string), 0)
+    if (string instanceof Co) return Co.Polar(string)
+    throw new Error(`Valor impossível de ser convertido: ${string}`)
 }
 
 //BRUTAL
@@ -325,4 +401,4 @@ module.exports = {
 //console.log(C(NaN))
 //console.log(C("NaN"))
 
-C(1).print("werf")
+C("i").print()
