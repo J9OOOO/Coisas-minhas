@@ -13,7 +13,7 @@ public class Sla {
             return new Apfloat(n.toString(), p);
         }
 
-        throw new IllegalArgumentException("Argumento inválido");
+        throw new IllegalArgumentException("Argumento inválido: " + a + "    (" + a.getClass().getName() + ")");
     }
 
     public static class Decimal {
@@ -25,6 +25,7 @@ public class Sla {
                 throw new IllegalArgumentException("Precisão inválida");
             }
             p1 = p;
+            Decimal.updateConstants();
         }
         
         public Decimal (Object a) {
@@ -71,7 +72,7 @@ public class Sla {
             return new Decimal(ApfloatMath.log(this.valor));
         }
 
-        public Decimal log10() {
+        public Decimal log() {
             return new Decimal(this.ln().div(new Decimal(10).ln()));
         }
 
@@ -172,9 +173,9 @@ public class Sla {
                 return this.inv().atan();
             }
             if (this.lt(0)) {
-                return this.inv().atan().add(Decimal.PI);
+                return this.inv().atan().add(GetPI());
             }
-            return Decimal.PI.div(2);
+            return GetPI().div(2);
         }
 
         public Decimal sech() {
@@ -218,7 +219,7 @@ public class Sla {
             return new Decimal(-1);
         }
 
-        public Decimal log(Object b) {
+        public Decimal logn(Object b) {
             return new Decimal(this.ln().div(new Decimal(b).ln()));
         }
 
@@ -243,10 +244,10 @@ public class Sla {
             Decimal max = x.gt(y) ? x : y;
             Decimal min = x.gt(y) ? y : x;
 
-            if (max.eq(0)) return Decimal.ZERO;
+            if (max.eq(0)) return GetZERO();
 
             return max.mul(
-                Decimal.ONE.add(min.div(max).pow(2)).sqrt()
+                GetONE().add(min.div(max).pow(2)).sqrt()
             );
         }
 
@@ -308,23 +309,109 @@ public class Sla {
         public String toString() {
             return this.valor.toString(true);
         }
-
-        public static final Decimal PI = new Decimal(-1).acos();
-        public static final Decimal E = new Decimal(1).exp();
-        public static final Decimal PHI = new Decimal(5).sqrt().add(1).div(2);
-        public static final Decimal SQRT2 = new Decimal(2).sqrt();
-        public static final Decimal SQRT3 = new Decimal(3).sqrt();
-        public static final Decimal SQRT5 = new Decimal(5).sqrt();
-        public static final Decimal LN2 = new Decimal(2).ln();
-        public static final Decimal LN10 = new Decimal(10).ln();
-        public static final Decimal TAU = new Decimal(2).mul(PI);
+        
+        public static PorP PI;
+        public static PorP E;
+        public static PorP PHI;
+        public static PorP SQRT2;
+        public static PorP SQRT3;
+        public static PorP SQRT5;
+        public static PorP LN2;
+        public static PorP LN10;
+        public static PorP TAU;
+        
         public static final Decimal ONE = new Decimal(1);
         public static final Decimal ZERO = new Decimal(0);
         public static final Decimal NEG_ONE = new Decimal(-1);
+
+        public static void updateConstants() {
+            PI = new PorP(new Decimal(-1).acos(), p1);
+            E = new PorP(new Decimal(1).exp(), p1);
+            PHI = new PorP(new Decimal(5).sqrt().add(1).div(2), p1);
+            SQRT2 = new PorP(new Decimal(2).sqrt(), p1);
+            SQRT3 = new PorP(new Decimal(3).sqrt(), p1);
+            SQRT5 = new PorP(new Decimal(5).sqrt(), p1);
+            LN2 = new PorP(new Decimal(2).ln(), p1);
+            LN10 = new PorP(new Decimal(10).ln(), p1);
+            TAU = new PorP(new Decimal(2).mul(GetPI()), p1);
+        }
+
+        public static Decimal GetPI() {
+            PI.CheckPrecision(p1);
+            return PI.var;
+        }
+
+        public static Decimal GetE() {
+            E.CheckPrecision(p1);
+            return E.var;
+        }
+
+        public static Decimal GetPHI() {
+            PHI.CheckPrecision(p1);
+            return PHI.var;
+        }
+
+        public static Decimal GetSQRT2() {
+            SQRT2.CheckPrecision(p1);
+            return SQRT2.var;
+        }
+
+        public static Decimal GetSQRT3() {
+            SQRT3.CheckPrecision(p1);
+            return SQRT3.var;
+        }
+
+        public static Decimal GetSQRT5() {
+            SQRT5.CheckPrecision(p1);
+            return SQRT5.var;
+        }
+
+        public static Decimal GetLN2() {
+            LN2.CheckPrecision(p1);
+            return LN2.var;
+        }
+
+        public static Decimal GetLN10() {
+            LN10.CheckPrecision(p1);
+            return LN10.var;
+        }
+
+        public static Decimal GetTAU() {
+            TAU.CheckPrecision(p1);
+            return TAU.var;
+        }
+
+        public static Decimal GetONE() {
+            return ONE;
+        }
+
+        public static Decimal GetZERO() {
+            return ZERO;
+        }
+
+        static {
+            updateConstants();
+        }
+    }
+
+    public static class PorP {
+        Decimal var;
+        long p;
+
+        public PorP(Decimal var, long p) {
+            this.var = var;
+            this.p = p;
+        }
+
+        void CheckPrecision(long p1) {
+            if (p != p1) {
+                throw new IllegalStateException("A precisão da constante não corresponde à precisão atual.");
+            }
+        }
     }
 
     public static void main(String[] args) {
-        Decimal x = new Decimal(2);
-        System.out.println(x.lnh());
+        Decimal a = (new Decimal((new Decimal((new Decimal((2))).log())).add(new Decimal((new Decimal((2))).log())))).add(new Decimal((new Decimal(((new Decimal((new Decimal((new Decimal(2)).pow(new Decimal(2)))).mul(new Decimal(2)))).add(new Decimal(1))))).sin()));
+        System.out.println(a);
     }
 }
