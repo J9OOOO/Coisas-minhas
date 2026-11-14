@@ -14,9 +14,10 @@ class Co {
         if (imag === undefined) imag = gh(0)
         real = gh(real)
         imag = gh(imag)
-        if (real.isNaN() || imag.isNaN()) throw new Error("??????????")
-        this.real = gh(real)
-        this.imag = gh(imag)
+        //console.log(real, imag)
+        if (real.isNaN() || imag.isNaN()) throw new Error(`Parte real ou imaginária como NaN: (${real}, ${imag})`)
+        this.real = real
+        this.imag = imag
     }
 
     static Polar(r, theta) {
@@ -28,7 +29,7 @@ class Co {
         r = gh(r)
         theta = gh(theta)
 
-        if (r.isNaN() || theta.isNaN()) throw new Error("??????????")
+        if (r.isNaN() || theta.isNaN()) throw new Error(`Raio ou ângulo como NaN: (${r}, ${theta})`)
         if (r.lt(0)) throw new Error("R menor que 0 não é válido")
 
         return new Co(r.times(theta.cos()), r.times(theta.sin()))
@@ -48,8 +49,8 @@ class Co {
     }
     div(b) {
         b = Ajuste(b)
-        let denom = (b.real).times(b.real).add((b.imag).times(b.imag))
         if (b.isZero()) throw new Error("Divisão por zero")
+        let denom = (b.real).times(b.real).add((b.imag).times(b.imag))
         return new Co(((this.real).times(b.real).add((this.imag).times(b.imag))).div(denom), ((this.imag).times(b.real).sub(this.real.times(b.imag))).div(denom))
     }
     inv() {
@@ -75,8 +76,7 @@ class Co {
     }
     pow(b) {
         b = Ajuste(b)
-        if (this.isZero() && b.isReal && b.real.gt(gh(0))) return C(0)
-        if (!(b instanceof Co)) b = C(b)
+        if (this.isZero() && b.isReal() && b.real.gt(gh(0))) return C(0)
         let a = (b.mul(this.ln())).exp()
         if (a.isNaN()) throw new Error("Resultado inválido")
         return a
@@ -109,7 +109,7 @@ class Co {
 
     nrt(n) {
         n = Ajuste(n)
-        return this.pow(new Co(1, 0).div(new Co(n)))
+        return this.pow(new Co(1, 0).div(n))
     }
     sqrt() {
         return this.nrt(2)
@@ -199,7 +199,7 @@ class Co {
         return (this.real.isNaN() || this.imag.isNaN())
     }
     isFinite() {
-        return ((this.real).isFinite() && (this.imag).isFinite())
+        return (isFinite(this.real) && isFinite(this.imag))
     }
 
     asin() {
@@ -235,7 +235,7 @@ class Co {
 function Cpp(string) {
 
     //Barragem
-    if (string === null || string === undefined || (typeof string === "string" && string.trim() === "")) throw new Error("Valor inválido")
+    if (string === null || string === undefined || (typeof string === "string" && string.trim() === "")) throw new Error(`Valor inválido: ${string}`)
     //Barragem
 
     if (typeof string === "string") {
@@ -249,7 +249,7 @@ function Cpp(string) {
         } catch {throw new Error(`Valor inválido: ${string}`)}
         return new Co(r)
     }
-    if (i !== string.length - 1) throw new Error("Formatação inválida")
+    if (i !== string.length - 1) throw new Error(`Formatação inválida: ${string}`)
 
     //let LimIMais = string.indexOf("+")
     let LimIIMais = string.lastIndexOf("+")
@@ -399,6 +399,12 @@ function Val(s) {
     try { gh(s); return true } catch { return false }
 }
 
+function isFinite(a) {
+    if (!(a instanceof gh)) throw new Error(`Não é Decimal.js: ${typeof a}`)
+    return !a.abs().eq(Infinity) && !a.isNaN();
+}
+//Não tenho ideia do que isso seja
+
 const im = new Co(0, 1)
 
 const invar = {
@@ -449,5 +455,7 @@ module.exports = {
 //e^ipi+1=0
 
 //C(Infinity).mul(1).print()
+//C("1.2548745794537984 5 3 8 7 2 4 3 9 8 4 3 5 5 6 4   8 7 5 3 4 8 7 9 3 8 7 3 5 8 973597853289  52e+10-2.9 8 7 4 3 2 98743287234452837585439494994390 3 0 3 0 3e - 1 0 i ").print()
+//C("-1e-1-1e-1i").print()
 
-C("12+2i").print()
+//console.log(isFinite(gh(9437893423174173879168397897814981433)))
