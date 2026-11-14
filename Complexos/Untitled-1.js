@@ -10,7 +10,6 @@ class Co {
             this.imag = gh(real.imag)
             return
         }
-        real = gh(real)
         if (imag === undefined) imag = gh(0)
         real = gh(real)
         imag = gh(imag)
@@ -35,29 +34,33 @@ class Co {
         return new Co(r.times(theta.cos()), r.times(theta.sin()))
     }
 
-    add(b) {
-        b = Ajuste(b)
+    static parser(a, b) {
+        return C(a, b)
+    }
+
+    add(b, b1) {
+        b = Ajuste(b, b1)
         return new Co(this.real.add(b.real), this.imag.add(b.imag))
     }
-    sub(b) {
-        b = Ajuste(b)
+    sub(b, b1) {
+        b = Ajuste(b, b1)
         return new Co(this.real.sub(b.real), this.imag.sub(b.imag))
     }
-    mul(b) {
-        b = Ajuste(b)
+    mul(b, b1) {
+        b = Ajuste(b, b1)
         return new Co(this.real.times(b.real).sub(this.imag.times(b.imag)), this.real.times(b.imag).add(this.imag.times(b.real)))
     }
-    div(b) {
-        b = Ajuste(b)
+    div(b, b1) {
+        b = Ajuste(b, b1)
         if (b.isZero()) throw new Error("Divisão por zero")
         let denom = (b.real).times(b.real).add((b.imag).times(b.imag))
         return new Co(((this.real).times(b.real).add((this.imag).times(b.imag))).div(denom), ((this.imag).times(b.real).sub(this.real.times(b.imag))).div(denom))
     }
     inv() {
-        return C(1).div(this)
+        return Co["ONE"].div(this)
     }
     conj() {
-        return new Co(this.real, this.imag.times(gh(-1)))
+        return new Co(this.real, this.imag.neg())
     }
     r() {
         return new Co((this.real.times(this.real)).add(this.imag.times(this.imag)).sqrt(), 0)
@@ -71,21 +74,21 @@ class Co {
     //SALVE EULER
     ln() {
         let r = this.r()
-        if (r.eq(C(0))) throw new Error("ln(0) não é definido")
+        if (r.isZero()) throw new Error("ln(0) não é definido")
         return new Co((r.real).ln(), this.theta().real)
     }
-    pow(b) {
-        b = Ajuste(b)
-        if (this.isZero() && b.isReal() && b.real.gt(gh(0))) return C(0)
+    pow(b, b1) {
+        b = Ajuste(b, b1)
+        if (this.isZero() && b.isReal() && b.real.gt(gh(0))) return Co[ZERO]
         let a = (b.mul(this.ln())).exp()
         if (a.isNaN()) throw new Error("Resultado inválido")
         return a
     }
     i() {
-        return this.mul(new Co(0, 1))
+        return this.mul(Co["I"])
     }
     in() {
-        return this.mul(new Co(0, -1))
+        return this.mul(Co["MINUS_I"])
     }
 
     sin() {
@@ -107,9 +110,9 @@ class Co {
         return (this.tan()).inv()
     }
 
-    nrt(n) {
-        n = Ajuste(n)
-        return this.pow(new Co(1, 0).div(n))
+    nrt(n, n1) {
+        n = Ajuste(n, n1)
+        return this.pow(Co["ONE"].div(n))
     }
     sqrt() {
         return this.nrt(2)
@@ -120,50 +123,21 @@ class Co {
     log() {
         return this.logn(10)
     }
-    logn(n) {
-        n = Ajuste(n)
+    logn(n, n1) {
+        n = Ajuste(n, n1)
         return (this.ln().div(new Co(n.ln())))
     }
     print(tipo) {
-        //if (isNaN(this.real.add(this.imag))) throw new Error("Número inválido")
-        if (tipo === undefined) tipo = "c"
-        if (tipo === "c") {
-            if (this.imag.isZero()) return console.log(`${this.real}`)
-            if (this.real.isZero() && this.imag.eq(1)) return console.log(`i`)
-            if (this.real.isZero() && this.imag.eq(-1)) return console.log(`-i`)
-            if (this.real.isZero()) return console.log(`${this.imag}i`)
-            if (this.imag.eq(1)) return console.log(`${this.real} + i`)
-            if (this.imag.eq(-1)) return console.log(`${this.real} - i`)
-            if (this.imag.isNeg()) return console.log(`${this.real} - ${this.imag.abs()}i`)
-            return console.log(`${this.real} + ${this.imag}i`)
-        }
-        if (tipo === "p") {
-            let r = this.r()
-            let arg = this.theta()
-            if (arg.isZero()) return console.log(`${r.real}`)
-            if (r.isZero()) return console.log(0)
-            if (r.eq(1) && arg.eq(1)) return console.log(`e ** i`)
-            if (r.eq(1) && arg.eq(-1)) return console.log(`e ** (-i)`)
-            if (r.eq(1) && arg.noeq(1) && arg.noeq(-1)) return console.log(`e ** (${arg.real}i)`)
-            if (arg.eq(1)) return console.log(`${r.real} * e ** i`)
-            if (arg.eq(-1)) return console.log(`${r.real} * e ** (-i)`)
-            return console.log(`${r.real} * e ** (${arg.real}i)`)
-        }
-        if (tipo === "pa") {
-            let r = this.r()
-            let arg = this.theta()
-            return console.log(`${r.real} ∠ ${arg.real}`)
-        }
-        throw new Error(`tipo inválido: ${tipo}`)
+        console.log(this.toString(tipo))
     }
     neg() {
-        return C(0).sub(this)
+        return Co["ZERO"].sub(this)
     }
     sinh() {
-        return (this.exp().sub((this.neg()).exp())).div(C(2))
+        return (this.exp().sub((this.neg()).exp())).div(new Co(2))
     }
     cosh() {
-        return (this.exp().add((this.neg()).exp())).div(C(2))
+        return (this.exp().add((this.neg()).exp())).div(new Co(2))
     }
     tanh() {
         return this.sinh().div(this.cosh())
@@ -187,12 +161,12 @@ class Co {
     isZero(){
         return (this.real.isZero() && this.imag.isZero())
     }
-    eq(b) {
-        b = Ajuste(b)
+    eq(b, b1) {
+        b = Ajuste(b, b1)
         return (this.real.eq(b.real) && this.imag.eq(b.imag))
     }
-    noeq(b) {
-        b = Ajuste(b)
+    noeq(b, b1) {
+        b = Ajuste(b, b1)
         return (!(this.real.eq(b.real)) || !(this.imag.eq(b.imag)))
     }
     isNaN() {
@@ -203,23 +177,41 @@ class Co {
     }
 
     asin() {
-        return ((((C(1).sub(this.mul(this))).sqrt().add(this.i()))).ln()).in()
+        return ((((Co["ONE"].sub(this.mul(this))).sqrt().add(this.i()))).ln()).in()
     }
     acos() {
-        return C(PI.div(2)).sub(this.asin())
+        return (Co[PI].div(2)).sub(this.asin())
     }
     atan() {
         let raz = (im.add(this)).div(im.sub(this))
-        return ((raz.ln()).i()).div(C(2))
+        return ((raz.ln()).i()).div(new Co(2))
+    }
+    asec() {
+        return this.inv().acos()
+    }
+    acsc() {
+        return this.inv().asin()
+    }
+    acot() {
+        return this.inv().atan()
     }
     asinh() {
-        return ((this.mul(this)).add(C(1)).sqrt().add(this)).ln()
+        return ((this.mul(this)).add(Co["ONE"]).sqrt().add(this)).ln()
     }
     acosh() {
-        return ((this.mul(this)).sub(C(1)).sqrt().add(this)).ln()
+        return ((this.mul(this)).sub(Co["ONE"]).sqrt().add(this)).ln()
     }
     atanh() {
         return this.in().atan().i()
+    }
+    asech() {
+        return this.inv().acosh()
+    }
+    acsch() {
+        return this.inv().asinh()
+    }
+    acoth() {
+        return this.inv().atanh()
     }
     DigitRemov(n) {
         if (n instanceof Co) {
@@ -229,174 +221,213 @@ class Co {
         }
         return C(this.real.toDecimalPlaces(n, gh.ROUND_DOWN), this.imag.toDecimalPlaces(n, gh.ROUND_DOWN))
     }
+
+    toString(tipo) {
+        if (tipo === undefined) tipo = "c"
+        if (tipo === "c") {
+            if (this.imag.isZero()) return `${this.real}`
+            if (this.real.isZero() && this.imag.eq(1)) return `i`
+            if (this.real.isZero() && this.imag.eq(-1)) return `-i`
+            if (this.real.isZero()) return `${this.imag}i`
+            if (this.imag.eq(1)) return `${this.real} + i`
+            if (this.imag.eq(-1)) return `${this.real} - i`
+            if (this.imag.isNeg()) return `${this.real} - ${this.imag.abs()}i`
+            return `${this.real} + ${this.imag}i`
+        }
+        if (tipo === "p") {
+            let r = this.r()
+            let arg = this.theta()
+            if (arg.isZero()) return `${r.real}`
+            if (r.isZero()) return `0`
+            if (r.eq(1) && arg.eq(1)) return `e ** i`
+            if (r.eq(1) && arg.eq(-1)) return `e ** (-i)`
+            if (r.eq(1) && arg.noeq(1) && arg.noeq(-1)) return `e ** (${arg.real}i)`
+            if (arg.eq(1)) return `${r.real} * e ** i`
+            if (arg.eq(-1)) return `${r.real} * e ** (-i)`
+            return `${r.real} * e ** (${arg.real}i)`
+        }
+        if (tipo === "pa") {
+            let r = this.r()
+            let arg = this.theta()
+            return `${r.real} ∠ ${arg.real}`
+        }
+        throw new Error(`Tipo inválido: ${tipo}`)
+    }
+    toArray() {
+        return [this.real, this.imag]
+    }
+    toObjectDecimal(tipo) {
+        if (tipo === "Cartesian") return {real: this.real, imag: this.imag}
+        if (tipo === "CartesianSmall") return {re: this.real, im: this.imag}
+        if (tipo === "PolarR") return {r: this.r().real, phi: this.theta().real}
+        if (tipo === "PolarABS") return {abs: this.r().real, arg: this.theta().real}
+        throw new Error(`Tipo inválido: ${tipo}`)
+    }
+    toObjectNumber(tipo) {
+        if (tipo === "Cartesian") return {real: this.real.toNumber(), imag: this.imag.toNumber()}
+        if (tipo === "CartesianSmall") return {re: this.real.toNumber(), im: this.imag.toNumber()}
+        if (tipo === "PolarR") return {r: this.r().real.toNumber(), phi: this.theta().real.toNumber()}
+        if (tipo === "PolarABS") return {abs: this.r().real.toNumber(), arg: this.theta().real.toNumber()}
+        throw new Error(`Tipo inválido: ${tipo}`)
+    }
+    toNumber() {
+        return { real: this.real.toNumber(), imag: this.imag.toNumber() }
+    }
 }
+
+Co["PI"] = new Co(gh(-1).acos())
+Co["E"] = new Co(gh(1).exp())
+
+Co["TAU"] = new Co(gh(-1).acos()).mul(2)
+
+Co["SQRT2"] = new Co(gh(2).sqrt())
+Co["SQRT3"] = new Co(gh(3).sqrt())
+Co["SQRT5"] = new Co(gh(5).sqrt())
+
+Co["LN10"] = new Co(gh(10).ln())
+Co["LN2"] = new Co(gh(2).ln())
+Co["LOG10E"] = new Co(gh(1).div(gh(10).ln()))
+Co["PHI"] = new Co((gh(1).add(gh(5).sqrt())).div(gh(2)))
+
+Co["PI_2"] = new Co(gh(-1).acos().div(gh(2)))
+Co["PI_3"] = new Co(gh(-1).acos().div(gh(3)))
+Co["PI_4"] = new Co(gh(-1).acos().div(gh(4)))
+
+Co["I"] = new Co(0, 1)
+Co["MINUS_I"] = new Co(0, -1)
+
+Co["ONE"] = new Co(1)
+Co["MINUS_ONE"] = new Co(-1)
+Co["ZERO"] = new Co(0)
 
 //Aqui eu vou ver o que dá problema e resolver tudo, não sei o que cada coisa faz em Decimal
-function Cpp(string) {
+function C(a, b) {
+    /*
+    Número: (-1, 3, -7812, 1.94, "34", "8230134", "-98143", ...)
+    Imaginário puro: (i, -i, 83i, -3.8324i, ...)
+    Objeto: ({abs, arg}, {real, imag}, {r, phi}, ...)
+    Array: ([3, 3], [-1, 0], ["-1", "-1"], ...)
+    Complexo completo: (1+i, 1-i, 432187+49i, 0.972134+1.1238974i, ...)
+    */
 
-    //Barragem
-    if (string === null || string === undefined || (typeof string === "string" && string.trim() === "")) throw new Error(`Valor inválido: ${string}`)
-    //Barragem
+    if (b !== undefined) try {return new Co(a, b)} catch {throw new Error(`'a' inválido com o 'b': ${a} e ${b}`)}
 
-    if (typeof string === "string") {
-    //string = string.replace("I", "i")
-    let i = string.indexOf("i")
+    if (a instanceof Co) return a
 
-    if (i === -1) {
-        let r
+    let tipo = typeof a
+
+    try {
+        return new Co(a)
+    } catch {}
+
+    if (tipo === "string") {
+        //O primeiro try já pega strings, então para números em strings já está resolvido
+        a = a.replace(/\s/g, "")
+        let r = a.indexOf("r")
+        let r1 = a.indexOf("∠")
+
+        if (r !== -1 || r1 !== -1) {
+            if (r === -1) r = r1
+            let R = a.slice(0, r)
+            let phi = a.slice(r + 1, a.length)
+
+            if (Co[R]?.real !== undefined) {R = Co[R].real}
+            if (Co[phi]?.real !== undefined) {phi = Co[phi].real}
+
+            return Co.Polar(R, phi)
+        }
+
+        let I = a.indexOf("i")
+        let i1 = a.indexOf("I")
+
+        if (I === -1) I = i1
+        if (I !== a.length - 1) throw new Error(`Formatação errada: ${a}`)
         try {
-            r = gh(string)
-        } catch {throw new Error(`Valor inválido: ${string}`)}
-        return new Co(r)
-    }
-    if (i !== string.length - 1) throw new Error(`Formatação inválida: ${string}`)
+            return new Co(0, a.slice(0, I))
+        } catch {}
 
-    //let LimIMais = string.indexOf("+")
-    let LimIIMais = string.lastIndexOf("+")
+        if (a === "i" || a === "+i" || a === "I" || a === "+I") return new Co(0, 1)
+        if (a === "-i" || a === "-I") return new Co(0, -1)
 
-    //let LimIMenos = string.indexOf("-")
-    let LimIIMenos = string.lastIndexOf("-")
-
-    if (string[LimIIMenos - 1] === "e") LimIIMenos = string.slice(0, LimIIMenos - 1).lastIndexOf("-")
-    if (string[LimIIMais - 1] === "e") LimIIMais = string.slice(0, LimIIMais - 1).lastIndexOf("+")
-
-    let LimS
-
-    //!isNaN(Number(string[LimIIMais - 1])) = try {gh(string[LimIIMais - 1]), LIMITE1 = true} catch {LIMITE1 = false}
-    let LIM1, LIM2, LIM3, LIM4
-    LIM1 = Val(string[LimIIMais - 1])
-    LIM2 = Val(string[LimIIMais + 1])
-    LIM3 = Val(string[LimIIMenos - 1])
-    LIM4 = Val(string[LimIIMenos + 1])
-    //isNaN não funciona aqui... (como eu preciso)
-    //console.log(LIM1, LIM2, LIM3, LIM4)
-    //console.log(LimIIMais)
-
-
-
-    if (LIM1 && (LIM2 || string[LimIIMais + 1] === "i")) LimS = LimIIMais
-    if (LIM3 && (LIM4 || string[LimIIMenos + 1] === "i")) LimS = LimIIMenos
-
-    //console.log(string.slice(0, LimI), LimI)
-    //console.log(string.slice(0, LimII), LimII)
-    let RealS = string.slice(0, LimS)
-    let ImagS = string.slice(LimS, string.length)
-    let real, imag
-    //console.log(LimS)
-    //console.log(RealS, ImagS)
-
-    if (RealS === ImagS) {
-        //console.log(RealS === ImagS)
-        if ((string[0] === "+" && string.length === 2)|| string[0] === "i") return new Co(0, 1)
-        if (string[0] === "-" && string.length === 2) return new Co(0, -1)
-        return new Co(0, string.slice(0, string.length - 1))
-    }
-
-    if (ImagS.length === 2 && ImagS[0] === "+") imag = 1
-    if (ImagS.length === 2 && ImagS[0] === "-") imag = -1
-
-    //console.log(RealS)
-    //console.log(ImagS)
-
-    //Barragem
-
-    //Barragem
-
-    if (imag === undefined) try {imag = gh(ImagS.slice(0, ImagS.length - 1))} catch {throw new Error(`Valor inválido: ${ImagS}`)}
-    try {real = gh(RealS)} catch {throw new Error(`Valor inválido: ${RealS}`)}
-
-    //console.log(imag)
-
-    //console.log(real)
-    //console.log(imag)
-    //console.log(ImagS.slice(0, ImagS.length - 2))
-
-    return new Co(real, imag)
-    }
-    if (string instanceof Co) return new Co(string)
-    
-    let Valor
-
-    try {Valor = gh(string)} catch {throw new Error(`Valor inválido: ${string}`)}
-
-    return new Co(Valor)
-}
-
-function C(a, b, t) {
-    if (t !== 0 && t !== 1 && t !== undefined) throw new Error(`Configuração inválida: t = ${t}`)
-
-    let Cartesiano = t === 0 || t === undefined
-    let Polar = t === 1
-
-    if (typeof a === "string") {
-
-    a = a.replace("I", "i")
-    a = a.replace("R", "r")
-
-    if (a.indexOf("r") !== -1) {Cartesiano = false, Polar = true, a = a.replace(/\s+/g, ""); if (b !== undefined || t !== undefined) throw new Error(`a inválido: ${a}`)}
-    if (a.indexOf("i") !== -1) {Cartesiano = true, Polar = false, a = a.replace(/\s+/g, ""); if (b !== undefined || t !== undefined) throw new Error(`a inválido: ${a}`)}
-
-    }
-    
-    //console.log(Polar)
-
-    let Na, Nb
-    try {
-        gh(a)
-        Na = false
-    } catch {Na = true}
-
-    try {
-        gh(b)
-        Nb = false
-    } catch {Nb = true}
-
-    if (b === undefined && Cartesiano) return Cpp(a)
-    if (b === undefined && Polar) return Cpo(a)
-
-    if (a === null || Na || (typeof a === "string" && a.trim() === "")) throw new Error(`a inválido: ${a}`)
-    if (b === null || Nb || (typeof b === "string" && b.trim() === "")) throw new Error(`b inválido: ${b}`)
-
-    if (Cartesiano) return new Co(a, b)
-    if (Polar) return Co.Polar(a, b)
-}
-
-function Cpo(string) {
-
-    //Barragem
-    if (string === null || string === undefined || (typeof string === "string" && string.trim() === "")) throw new Error(`Valor inválido: ${string}`)
-    //Barragem
-
-    if (typeof string === "string") {
-        //string = string.replace("R", "r")
-        let r = string.indexOf("r")
-        if (r === -1) return Co.Polar(gh(string))
+        //Aqui já tem certeza de que é complexo completo
         
-        try {gh(string[r - 1])} catch {throw new Error(`Formatação inválida: ${string}`)}
+        let SinalEscolhido
 
-        let raio = gh(string.slice(0, r))
-        let argumento = gh(string.slice(r + 1, string.length))
+        let IMais = a.lastIndexOf("+")
+        let IMenos
 
-        //console.log(raio, argumento)
+        while (a[IMais - 1] === "e") {
+            IMais = a.slice(0, IMais - 1).lastIndexOf("+")
+        }
 
-        return Co.Polar(raio, argumento)
+        if (IMais === 0) {IMais = -1}
 
+        if (IMais === -1) {
+            IMenos = a.lastIndexOf("-")
+            //console.log(IMenos)
+            while (a[IMenos - 1] === "e") {
+                IMenos = a.slice(0, IMenos - 1).lastIndexOf("-")
+            }
+        }
+
+        if (IMais === -1 && IMenos === -1) throw new Error(`Erro em encontrar o sinal: ${a}`)
+
+        SinalEscolhido = IMais !== -1 ? IMais : IMenos
+
+        let Sinal = IMais !== -1 ? gh(1) : gh(-1)
+
+        let SemSinal = a[0] === "+" || a[0] === "-" ? 1 : 0
+        let SinalEsq = 1
+        if (SemSinal) {
+            SinalEsq = a[0] === "+" ? 1 : -1
+        }
+
+        let SReal = a.slice(SemSinal, SinalEscolhido)
+
+        let SImag = a.slice(SinalEscolhido + 1, a.length - 1)
+
+        let Real, Imag
+
+        if (Co[SReal]?.real !== undefined) {Real = Co[SReal].real.mul(gh(SinalEsq))}
+        if (Co[SImag]?.real !== undefined) {Imag = Co[SImag].real.mul(Sinal)}
+
+        if (Real === undefined) Real = gh(SReal).mul(gh(SinalEsq))
+        if (Imag === undefined) Imag = SImag === "" ? Sinal : gh(SImag).mul(Sinal)
+
+        return new Co(Real, Imag)
     }
-    try {return Co.Polar(gh(string), 0)} catch {}
-    if (string instanceof Co) return Co.Polar(string)
-    throw new Error(`Valor impossível de ser convertido: ${string}`)
+
+    if (Array.isArray(a) && a.length === 2) {
+        return new Co(a[0], a[1])
+    }
+
+    if (tipo === "object" && a !== null) {
+        if ("real" in a && "imag" in a) {
+            return new Co(a.real, a.imag)
+        }
+
+        if ("r" in a && "phi" in a) {
+            return new Co.Polar(a.r, a.phi)
+        }
+
+        if ("abs" in a && "arg" in a) {
+            return new Co.Polar(a.abs, a.arg)
+        }
+
+        if ("re" in a && "im" in a) {
+            return new Co(a.re, a.im)
+        }
+    }
+
+    throw new Error(`Input(s) inválido(s): ${a} e ${b}`)
 }
 
 //BRUTAL
 //
 
-function Ajuste(x) {
-    if (!(x instanceof Co)) x = C(x)
+function Ajuste(x, y) {
+    if (!(x instanceof Co)) x = C(x, y)
     return x
-}
-
-function Val(s) {
-    try { gh(s); return true } catch { return false }
 }
 
 function isFinite(a) {
@@ -405,57 +436,10 @@ function isFinite(a) {
 }
 //Não tenho ideia do que isso seja
 
-const im = new Co(0, 1)
-
-const invar = {
-    PI: C(gh.acos(-1)),
-    E: C(gh(1).exp()),
-
-    TAU: C(C(gh.acos(-1)).mul(2)),
-
-    SQRT2c: C(gh(2).sqrt()),
-    SQRT3c: C(gh(3).sqrt()),
-    SQRT5c: C(gh(5).sqrt()),
-
-    LN10c: C(gh(10).ln()),
-    LN2c: C(gh(2).ln()),
-    LOG10Ec: C(Math.LOG10E),
-    PHI: C((gh(1).add(gh(5).sqrt())).div(gh(2)))
-}
-
 module.exports = {
-    Co,
-    im,
-    C,
-    Ajuste,
-    invar
+    Co
 }
 
-//let x = C(2)
-//x.div(2).print()
+//C -> parserC
 
-//I try change the formality
-
-//console.log(C("banana"))
-//console.log(C("bi"))
-//console.log(C("undefined"))
-//console.log(C("undefnedi"))
-//console.log(C("1+bananai"))
-//console.log(C("banana+i"))
-//console.log(C(null))
-//console.log(C(undefined))
-//console.log(C(""))
-//console.log(C())
-//console.log(C("-"))
-//console.log(C("+"))
-//console.log(C(NaN))i
-//console.log(C("NaN"))
-
-//C(0, invar.PI).exp().add(1).DigitRemov(99).print()
-//e^ipi+1=0
-
-//C(Infinity).mul(1).print()
-//C("1.2548745794537984 5 3 8 7 2 4 3 9 8 4 3 5 5 6 4   8 7 5 3 4 8 7 9 3 8 7 3 5 8 973597853289  52e+10-2.9 8 7 4 3 2 98743287234452837585439494994390 3 0 3 0 3e - 1 0 i ").print()
-//C("-1e-1-1e-1i").print()
-
-//console.log(isFinite(gh(9437893423174173879168397897814981433)))
+C("1-PIi").print()
